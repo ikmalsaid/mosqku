@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-center {% if mosque_bg_exists %}with-bg-image{% endif %}">
+    <div class="hero-content">
+        <h1 class="hero-title">Welcome to Mosqku</h1>
+        <p class="hero-subtitle">Connecting Communities Through Modern Mosque Management</p>
+        {% if not user.is_authenticated %}
+            <div class="hero-cta">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-user-plus"></i> Get Started
+                </a>
+                <a href="#features" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-info-circle"></i> Learn More
+                </a>
+            </div>
+        {% elif not user.mosque_id and user.role != 'superadmin' %}
+            <div class="hero-cta">
+                <a href="{{ url_for('mosque.register_mosque') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-mosque"></i> Register Your Mosque
+                </a>
+            </div>
+        {% elif user.role == 'superadmin' %}
+            <div class="hero-cta">
+                <a href="{{ url_for('admin.add_mosque') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-mosque"></i> Add New Mosque
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Features Section -->
+<section id="features" class="features-section">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Why Choose Mosqku?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                    <h3>Prayer Time Management</h3>
+                    <p>Easily manage and display prayer times for your mosque. Keep your community informed and synchronized.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bullhorn fa-2x"></i>
+                    </div>
+                    <h3>Announcements</h3>
+                    <p>Share important updates and events with your community in real-time. Never miss an important announcement.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                    <h3>Community Building</h3>
+                    <p>Foster stronger connections within your community through effective mosque management and communication.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mosques Section -->
+<section class="mosques-section">
+    <div class="container">
+        <div class="section-header text-center mb-4">
+            <h2 class="section-title">Find Mosques Near You</h2>
+        </div>
+
+        {% if mosques %}
+            <div class="row g-4 justify-content-center">
+                {% for mosque in mosques %}
+                    <div class="col-md-4">
+                        <div class="mosque-card h-100">
+                            <div class="mosque-card-header text-center">
+                                <i class="fas fa-mosque"></i>
+                            </div>
+                            <div class="mosque-card-body">
+                                <h3 class="mosque-name text-center">{{ mosque.name }}</h3>
+                                <div class="mosque-info text-start">
+                                    <p><i class="fas fa-map-marker-alt"></i> {{ mosque.city }}, {{ mosque.state }}</p>
+                                    {% if mosque.phone %}
+                                        <p><i class="fas fa-phone"></i> {{ mosque.phone }}</p>
+                                    {% endif %}
+                                    {% if mosque.email %}
+                                        <p><i class="fas fa-envelope"></i> {{ mosque.email }}</p>
+                                    {% endif %}
+                                </div>
+                                <a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" class="btn btn-outline-primary mt-3 w-100">
+                                    <i class="fas fa-info-circle"></i> View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state text-center py-5">
+                <i class="fas fa-mosque fa-3x mb-3"></i>
+                <h3>No Mosques Registered Yet</h3>
+                <p class="text-muted">Be the first to register your mosque and join our growing community.</p>
+                {% if not user.is_authenticated %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary mt-3">
+                        <i class="fas fa-user-plus"></i> Sign Up to Register
+                    </a>
+                {% elif user.role == 'superadmin' %}
+                    <a href="{{ url_for('admin.add_mosque') }}" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus"></i> Add New Mosque
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('mosque.register_mosque') }}" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus"></i> Register Your Mosque
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %} 

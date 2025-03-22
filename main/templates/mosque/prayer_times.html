@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Prayer Times{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2><i class="fas fa-clock"></i> Prayer Times Management</h2>
+            <p class="text-muted mb-0">Manage daily prayer schedules for your mosque</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Add Prayer Time Form -->
+    <div class="col-md-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h4><i class="fas fa-plus-circle"></i> Add Prayer Time</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="prayer_name" class="form-label">Prayer Name</label>
+                        <select class="form-select" id="prayer_name" name="prayer_name" required>
+                            <option value="" disabled selected>Select prayer</option>
+                            <option value="Fajr">Fajr</option>
+                            <option value="Dhuhr">Dhuhr</option>
+                            <option value="Asr">Asr</option>
+                            <option value="Maghrib">Maghrib</option>
+                            <option value="Isha">Isha</option>
+                            <option value="Jumu'ah">Jumu'ah</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="time" class="form-label">Prayer Time</label>
+                        <input type="time" class="form-control" id="time" name="time" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Prayer Time
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prayer Times List -->
+    <div class="col-md-8">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h4><i class="fas fa-list"></i> Scheduled Prayer Times</h4>
+            </div>
+            <div class="card-body">
+                {% if prayer_times %}
+                <div class="prayer-times-list">
+                    {% for prayer in prayer_times %}
+                    <div class="prayer-time-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="prayer-name mb-1">{{ prayer.prayer_name }}</h5>
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-calendar"></i> {{ prayer.date.strftime('%d %B %Y') }}
+                                </p>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="prayer-time">
+                                    <i class="fas fa-clock"></i> {{ prayer.time.strftime('%I:%M %p') }}
+                                </span>
+                                <form method="POST" action="{{ url_for('mosque.delete_prayer_time', id=prayer.id) }}" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this prayer time?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-indicator">
+                    <i class="fas fa-clock fa-2x mb-3"></i>
+                    <p>No prayer times scheduled yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{{ url_for('mosque.dashboard') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %} 

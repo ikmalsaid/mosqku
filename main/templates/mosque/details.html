@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}{{ mosque.name }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2><i class="fas fa-mosque"></i> {{ mosque.name }}</h2>
+            <p class="text-muted mb-0">
+                <i class="fas fa-map-marker-alt"></i> {{ mosque.city }}, {{ mosque.state }}, {{ mosque.country }}
+            </p>
+        </div>
+        {% if user.is_authenticated and (user.mosque_id == mosque.id or user.role == 'superadmin') %}
+        <div class="col-md-4 text-md-end">
+            <div class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-cog"></i> Manage Mosque
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown">
+                    <li>
+                        <a class="dropdown-item" href="{{ url_for('mosque.prayer_times', mosque_id=mosque.id) }}">
+                            <i class="fas fa-clock"></i> Manage Prayer Times
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ url_for('mosque.announcements') }}">
+                            <i class="fas fa-bullhorn"></i> Manage Announcements
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Mosque Information -->
+    <div class="col-md-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-header">
+                <h4><i class="fas fa-info-circle"></i> Mosque Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="mosque-info-list">
+                    <div class="info-item">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <div>
+                            <label>Address</label>
+                            <span>{{ mosque.address }}</span>
+                        </div>
+                    </div>
+                    {% if mosque.phone %}
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <label>Phone</label>
+                            <span>{{ mosque.phone }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if mosque.email %}
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <label>Email</label>
+                            <span>{{ mosque.email }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if mosque.capacity %}
+                    <div class="info-item">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <label>Capacity</label>
+                            <span>{{ mosque.capacity }} people</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prayer Times -->
+    <div class="col-md-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-header">
+                <h4><i class="fas fa-clock"></i> Today's Prayer Times</h4>
+            </div>
+            <div class="card-body">
+                {% if prayer_times %}
+                <div class="prayer-times-list">
+                    {% for prayer in prayer_times %}
+                    <div class="prayer-time-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="prayer-name">{{ prayer.prayer_name }}</span>
+                            <span class="prayer-time">{{ prayer.time.strftime('%I:%M %p') }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-indicator">
+                    <i class="fas fa-clock fa-2x mb-3"></i>
+                    <p>No prayer times scheduled for today</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div class="col-md-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-header">
+                <h4><i class="fas fa-bullhorn"></i> Current Announcements</h4>
+            </div>
+            <div class="card-body">
+                {% if announcements %}
+                <div class="announcements-list">
+                    {% for announcement in announcements %}
+                    <div class="announcement-item">
+                        <h5 class="announcement-title mb-2">{{ announcement.title }}</h5>
+                        <p class="announcement-content mb-2">{{ announcement.content }}</p>
+                        <div class="announcement-meta">
+                            <p class="text-muted mb-0 small">
+                                <i class="fas fa-calendar-minus"></i> Until {{ announcement.end_date.strftime('%d %b %Y') }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-indicator">
+                    <i class="fas fa-bullhorn fa-2x mb-3"></i>
+                    <p>No current announcements</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{{ url_for('mosque.home') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+</div>
+{% endblock %} 

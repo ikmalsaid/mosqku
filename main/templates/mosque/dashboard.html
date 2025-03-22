@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+{% if not user.mosque_id %}
+    <div class="text-center py-5">
+        <div class="empty-state">
+            <i class="fas fa-mosque fa-3x mb-3"></i>
+            <h3>Welcome to Your Dashboard</h3>
+            <p class="text-muted">You haven't registered a mosque yet. Register your mosque to start managing it.</p>
+            <a href="{{ url_for('mosque.register_mosque') }}" class="btn btn-primary mt-3">
+                <i class="fas fa-plus"></i> Register Your Mosque
+            </a>
+        </div>
+    </div>
+{% else %}
+    <!-- Dashboard Header -->
+    <div class="dashboard-header mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h2 class="mb-1"><i class="fas fa-mosque"></i> {{ mosque.name }}</h2>
+                <p class="text-muted mb-md-0">
+                    <i class="fas fa-map-marker-alt"></i> {{ mosque.city }}, {{ mosque.state }}, {{ mosque.country }}
+                </p>
+            </div>
+            {% if user.role in ['admin', 'superadmin'] %}
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle w-100 w-md-auto" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-cog"></i> Quick Actions
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown">
+                    <li>
+                        <a class="dropdown-item" href="{{ url_for('mosque.prayer_times', mosque_id=mosque.id) }}">
+                            <i class="fas fa-clock"></i> Manage Prayer Times
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ url_for('mosque.announcements') }}">
+                            <i class="fas fa-bullhorn"></i> Manage Announcements
+                        </a>
+                    </li>
+                    {% if user.role == 'admin' %}
+                    <li>
+                        <a class="dropdown-item" href="{{ url_for('admin.add_admin') }}">
+                            <i class="fas fa-user-plus"></i> Add Another Admin
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Mosque Information Card -->
+        <div class="col-md-4">
+            <div class="card h-100 dashboard-card">
+                <div class="card-header">
+                    <h4><i class="fas fa-info-circle"></i> Mosque Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mosque-info-list">
+                        <div class="info-item">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <div>
+                                <label>Address</label>
+                                <span>{{ mosque.address }}</span>
+                            </div>
+                        </div>
+                        {% if mosque.phone %}
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <label>Phone</label>
+                                <span>{{ mosque.phone }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if mosque.email %}
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <label>Email</label>
+                                <span>{{ mosque.email }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if mosque.capacity %}
+                        <div class="info-item">
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <label>Capacity</label>
+                                <span>{{ mosque.capacity }} people</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prayer Times Card -->
+        <div class="col-md-4">
+            <div class="card h-100 dashboard-card">
+                <div class="card-header">
+                    <h4><i class="fas fa-clock"></i> Today's Prayer Times</h4>
+                </div>
+                <div class="card-body">
+                    {% if prayer_times %}
+                        <div class="prayer-times-list">
+                            {% for prayer in prayer_times %}
+                                <div class="prayer-time-item">
+                                    <div class="prayer-name">{{ prayer.prayer_name }}</div>
+                                    <div class="prayer-time">{{ prayer.time.strftime('%I:%M %p') }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-indicator">
+                            <i class="fas fa-calendar-day fa-2x"></i>
+                            <p>No prayer times scheduled for today</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Announcements Card -->
+        <div class="col-md-4">
+            <div class="card h-100 dashboard-card">
+                <div class="card-header">
+                    <h4><i class="fas fa-bullhorn"></i> Active Announcements</h4>
+                </div>
+                <div class="card-body">
+                    {% if announcements %}
+                        <div class="announcements-list">
+                            {% for announcement in announcements %}
+                                <div class="announcement-item">
+                                    <h5>{{ announcement.title }}</h5>
+                                    <p>{{ announcement.content }}</p>
+                                    <div class="announcement-meta">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        Until {{ announcement.end_date.strftime('%d %b %Y') }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-indicator">
+                            <i class="fas fa-bell-slash fa-2x"></i>
+                            <p>No active announcements</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %} 

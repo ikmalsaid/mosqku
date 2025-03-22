@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Add Administrator{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2><i class="fas fa-user-plus"></i> Add Administrator</h2>
+            <p class="text-muted mb-0">Create a new administrator account</p>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h4><i class="fas fa-user-shield"></i> Administrator Details</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" id="adminForm" onsubmit="return validatePassword()">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">
+                            <i class="fas fa-user"></i> Full Name
+                        </label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope"></i> Email Address
+                        </label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <input type="password" class="form-control" id="password" name="password" 
+                               pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$"
+                               title="Password must be at least 8 characters long and include at least one number and one special character"
+                               required>
+                        <div class="form-text">
+                            Password requirements:
+                            <ul class="mb-0">
+                                <li>At least 8 characters long</li>
+                                <li>Must contain at least one number</li>
+                                <li>Must contain at least one special character (@$!%*#?&)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="mosque_id" class="form-label">
+                            <i class="fas fa-mosque"></i> Assign to Mosque
+                        </label>
+                        <select class="form-select" id="mosque_id" name="mosque_id" required>
+                            {% if user.role == 'superadmin' %}
+                                <option value="" disabled selected>Select a mosque</option>
+                                {% for mosque in mosques %}
+                                <option value="{{ mosque.id }}">{{ mosque.name }}</option>
+                                {% endfor %}
+                            {% else %}
+                                <option value="{{ mosques[0].id }}">{{ mosques[0].name }}</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Administrator
+                        </button>
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function validatePassword() {
+    const password = document.getElementById('password');
+    const pattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    
+    if (!pattern.test(password.value)) {
+        password.setCustomValidity('Password must meet all requirements');
+        return false;
+    } else {
+        password.setCustomValidity('');
+        return true;
+    }
+}
+
+document.getElementById('password').addEventListener('input', validatePassword);
+</script>
+{% endblock %} 
