@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Reassign Mosque{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2><i class="fas fa-exchange-alt"></i> Reassign Mosque</h2>
+            <p class="text-muted mb-0">Reassign {{ admin.name }} to a different mosque</p>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h4><i class="fas fa-mosque"></i> Select Mosque</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-4">
+                        <label for="mosque_id" class="form-label">Mosque</label>
+                        <select class="form-select" id="mosque_id" name="mosque_id" required>
+                            <option value="" disabled selected>Select a mosque</option>
+                            {% for mosque in mosques %}
+                            <option value="{{ mosque.id }}" {% if admin.mosque_id == mosque.id %}selected{% endif %}>
+                                {{ mosque.name }} ({{ mosque.city }}, {{ mosque.state }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Assignment
+                        </button>
+                        <button type="button" onclick="goBack()" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

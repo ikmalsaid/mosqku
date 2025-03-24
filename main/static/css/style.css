@@ -283,6 +283,10 @@ body {
 
 .hero-cta {
     margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .hero-cta .btn {
@@ -290,6 +294,7 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    min-width: 200px;
 }
 
 .hero-cta .btn-outline-primary {
@@ -456,6 +461,17 @@ body {
         font-size: 1.2rem;
     }
     
+    .hero-cta {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0 1rem;
+    }
+    
+    .hero-cta .btn {
+        width: 100%;
+        margin: 0;
+    }
+    
     .section-title {
         font-size: 2rem;
     }
@@ -555,7 +571,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem;
+    padding: 0.75rem 1rem;
     background-color: #f8f9fa;
     border-radius: 8px;
     transition: background-color 0.2s ease;
@@ -568,11 +584,27 @@ body {
 .prayer-name {
     font-weight: 500;
     color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.prayer-name i {
+    color: var(--primary-color);
+    width: 1.5rem;
+    text-align: center;
 }
 
 .prayer-time {
     color: #666;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.prayer-time i {
+    color: var(--primary-color);
 }
 
 /* Announcements List */

@@ -10,7 +10,6 @@ class Announcement(db.Model):
     end_date = db.Column(db.Date, nullable=False)
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
-    is_active = db.Column(db.Boolean, default=True)
     mosque_id = db.Column(db.Integer, db.ForeignKey('mosque.id'), nullable=False)
     
     def __repr__(self):

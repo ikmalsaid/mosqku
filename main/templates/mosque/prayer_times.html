@@ -67,7 +67,9 @@
                     <div class="prayer-time-item">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h5 class="prayer-name mb-1">{{ prayer.prayer_name }}</h5>
+                                <h5 class="prayer-name mb-1">
+                                    <i class="fas fa-sun"></i> {{ prayer.prayer_name }}
+                                </h5>
                                 <p class="text-muted mb-0">
                                     <i class="fas fa-calendar"></i> {{ prayer.date.strftime('%d %B %Y') }}
                                 </p>
@@ -98,8 +100,8 @@
 </div>
 
 <div class="mt-4">
-    <a href="{{ url_for('mosque.dashboard') }}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Back to Dashboard
-    </a>
+    <button onclick="goBack()" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back
+    </button>
 </div>
 {% endblock %} 

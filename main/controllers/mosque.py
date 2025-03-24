@@ -56,43 +56,37 @@ def register_mosque():
 @mosque.route('/dashboard')
 @login_required
 def dashboard():
+    # Redirect superadmins to admin dashboard
+    if current_user.role == 'superadmin':
+        return redirect(url_for('admin.dashboard'))
+        
     if current_user.mosque_id:
         mosque = Mosque.query.get(current_user.mosque_id)
         prayer_times = PrayerTime.query.filter_by(
             mosque_id=current_user.mosque_id,
             date=date.today()
         ).all()
-        announcements = Announcement.query.filter_by(
-            mosque_id=current_user.mosque_id,
-            is_active=True
-        ).all()
+        
+        # Get all announcements and filter active ones using the property
+        all_announcements = Announcement.query.filter_by(mosque_id=current_user.mosque_id).all()
+        active_announcements = [a for a in all_announcements if a.is_active]
+        
         return render_template(
             "mosque/dashboard.html",
             user=current_user,
             mosque=mosque,
             prayer_times=prayer_times,
-            announcements=announcements
+            announcements=active_announcements
         )
     return render_template("mosque/dashboard.html", user=current_user)
 
 @mosque.route('/mosque/<int:id>')
 def mosque_details(id):
     mosque = Mosque.query.get_or_404(id)
-    prayer_times = PrayerTime.query.filter_by(
-        mosque_id=id,
-        date=date.today()
-    ).all()
-    announcements = Announcement.query.filter_by(
-        mosque_id=id,
-        is_active=True
-    ).all()
-    return render_template(
-        "mosque/details.html",
-        user=current_user,
-        mosque=mosque,
-        prayer_times=prayer_times,
-        announcements=announcements
-    )
+    all_announcements = Announcement.query.filter_by(mosque_id=id).all()
+    active_announcements = [a for a in all_announcements if a.is_active]
+    prayer_times = PrayerTime.query.filter_by(mosque_id=id).all()
+    return render_template('mosque/details.html', user=current_user, mosque=mosque, announcements=active_announcements, prayer_times=prayer_times)
 
 @mosque.route('/prayer-times/<int:mosque_id>', methods=['GET', 'POST'])
 @login_required
@@ -201,4 +195,42 @@ def delete_announcement(id):
     except Exception as e:
         flash('Error deleting announcement.', category='error')
     
-    return redirect(url_for('mosque.announcements', mosque_id=mosque_id)) 
+    return redirect(url_for('mosque.announcements', mosque_id=mosque_id))
+
+@mosque.route('/announcements/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_announcement(id):
+    announcement = Announcement.query.get_or_404(id)
+    
+    # Check if user has permission to edit this announcement
+    if current_user.mosque_id != announcement.mosque_id and current_user.role != 'superadmin':
+        flash('Unauthorized access.', category='error')
+        return redirect(url_for('mosque.dashboard'))
+    
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d').date()
+        start_time = datetime.strptime(request.form.get('start_time'), '%H:%M').time()
+        end_time = datetime.strptime(request.form.get('end_time'), '%H:%M').time()
+
+        if start_date > end_date or (start_date == end_date and start_time >= end_time):
+            flash('End date/time must be after start date/time.', 'error')
+            return redirect(url_for('mosque.edit_announcement', id=id))
+
+        try:
+            announcement.title = title
+            announcement.content = content
+            announcement.start_date = start_date
+            announcement.end_date = end_date
+            announcement.start_time = start_time
+            announcement.end_time = end_time
+            db.session.commit()
+            flash('Announcement updated successfully.', 'success')
+            return redirect(url_for('mosque.announcements'))
+        except Exception as e:
+            flash('Error updating announcement.', 'error')
+            return redirect(url_for('mosque.edit_announcement', id=id))
+
+    return render_template('mosque/edit_announcement.html', user=current_user, announcement=announcement) 
