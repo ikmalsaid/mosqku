@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from ..models.mosque import Mosque
 from ..models.prayer_time import PrayerTime
 from ..models.announcement import Announcement
+from ..models.user import User
 from .. import db
 from datetime import datetime, date
 
@@ -71,12 +72,16 @@ def dashboard():
         all_announcements = Announcement.query.filter_by(mosque_id=current_user.mosque_id).all()
         active_announcements = [a for a in all_announcements if a.is_active]
         
+        # Get assigned admins for this mosque
+        assigned_admins = User.query.filter_by(mosque_id=current_user.mosque_id, role='admin').all()
+        
         return render_template(
             "mosque/dashboard.html",
             user=current_user,
             mosque=mosque,
             prayer_times=prayer_times,
-            announcements=active_announcements
+            announcements=active_announcements,
+            assigned_admins=assigned_admins
         )
     return render_template("mosque/dashboard.html", user=current_user)
 
@@ -86,7 +91,20 @@ def mosque_details(id):
     all_announcements = Announcement.query.filter_by(mosque_id=id).all()
     active_announcements = [a for a in all_announcements if a.is_active]
     prayer_times = PrayerTime.query.filter_by(mosque_id=id).all()
-    return render_template('mosque/details.html', user=current_user, mosque=mosque, announcements=active_announcements, prayer_times=prayer_times)
+    
+    # Get assigned admins if user is superadmin or an admin of this mosque
+    assigned_admins = []
+    if current_user.is_authenticated and (current_user.role == 'superadmin' or current_user.mosque_id == mosque.id):
+        assigned_admins = User.query.filter_by(mosque_id=id, role='admin').all()
+    
+    return render_template(
+        'mosque/details.html',
+        user=current_user,
+        mosque=mosque,
+        announcements=active_announcements,
+        prayer_times=prayer_times,
+        assigned_admins=assigned_admins
+    )
 
 @mosque.route('/prayer-times/<int:mosque_id>', methods=['GET', 'POST'])
 @login_required

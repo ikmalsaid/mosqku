@@ -35,7 +35,7 @@ def register():
         if not email or not name or not password or not confirm_password:
             flash('All fields are required.', category='error')
         elif user:
-            flash('Email already exists.', category='error')
+            flash('User already exists.', category='error')
         elif len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
         elif len(name) < 2:

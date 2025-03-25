@@ -83,7 +83,7 @@ def add_admin():
         
         if current_user.role == 'admin' and int(mosque_id) != current_user.mosque_id:
             flash('Unauthorized access.', category='error')
-            return redirect(url_for('admin.dashboard'))
+            return redirect(url_for('mosque.dashboard'))
             
         user = User.query.filter_by(email=email).first()
         if user:
@@ -100,7 +100,11 @@ def add_admin():
                 db.session.add(new_admin)
                 db.session.commit()
                 flash('Admin added successfully!', category='success')
-                return redirect(url_for('admin.dashboard'))
+                # Redirect based on user role
+                if current_user.role == 'superadmin':
+                    return redirect(url_for('admin.dashboard'))
+                else:
+                    return redirect(url_for('mosque.dashboard'))
             except Exception as e:
                 flash('Error adding admin.', category='error')
                 
