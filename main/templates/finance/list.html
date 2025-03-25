@@ -1,23 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}Inventory Management{% endblock %}
+{% block title %}Finance Management{% endblock %}
 
 {% block content %}
 <div class="dashboard-header">
     <div class="row align-items-center">
         <div class="col">
-            <h2><i class="fas fa-boxes"></i> Inventory Management</h2>
+            <h2><i class="fas fa-money-bill-wave"></i> Finance Management</h2>
             <p class="text-muted mb-0">{{ mosque.name }}</p>
             <p class="text-muted small mb-0">
-                <span><i class="fas fa-layer-group"></i> Total Items: {{ items|length }}</span>
+                <span><i class="fas fa-hand-holding-usd text-muted"></i> Total Income: RM {{ "%.2f"|format(total_income) }}</span>
+                <span class="ms-3"><i class="fas fa-money-bill-wave-alt text-muted"></i> Total Expenses: RM {{ "%.2f"|format(total_expenses) }}</span>
                 {% if items %}
                 <span class="ms-3"><i class="fas fa-clock"></i> Last Updated: {{ items[0].date_added.strftime('%d/%m/%Y %H:%M') }}</span>
                 {% endif %}
             </p>
         </div>
         <div class="col-md-4 text-end mt-3 mt-md-0">
-            <a href="{{ url_for('inventory.add_item', mosque_id=mosque.id) }}" class="btn btn-success">
-                <i class="fas fa-plus"></i> Add New Item
+            <a href="{{ url_for('finance.add_item', mosque_id=mosque.id) }}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Add New Transaction
             </a>
         </div>
     </div>
@@ -31,12 +32,12 @@
                 <thead class="table-light">
                     <tr>
                         <th style="width: 10%">Number</th>
-                        <th style="width: 15%">Item Name</th>
+                        <th style="width: 15%">Transaction</th>
                         <th style="width: 10%">Category</th>
                         <th style="width: 20%">Description</th>
-                        <th style="width: 8%">Quantity</th>
+                        <th style="width: 10%">Amount (RM)</th>
                         <th style="width: 12%">Date Added</th>
-                        <th style="width: 15%">Remarks</th>
+                        <th style="width: 13%">Remarks</th>
                         <th style="width: 10%">Actions</th>
                     </tr>
                 </thead>
@@ -44,15 +45,17 @@
                     {% for item in items %}
                     <tr>
                         <td>{{ item.number }}</td>
-                        <td>{{ item.item_name }}</td>
-                        <td>{{ item.item_category }}</td>
-                        <td>{{ item.item_description }}</td>
-                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.transaction_name }}</td>
+                        <td>{{ item.finance_category }}</td>
+                        <td>{{ item.description }}</td>
+                        <td class="{{ 'text-success' if item.amount > 0 else 'text-danger' }}">
+                            {{ "%.2f"|format(item.amount) }}
+                        </td>
                         <td>{{ item.date_added.strftime('%d/%m/%Y %H:%M') }}</td>
                         <td>{{ item.remarks }}</td>
                         <td>
                             <div class="btn-group">
-                                <a href="{{ url_for('inventory.edit_item', id=item.id) }}" class="btn btn-sm btn-outline-success">
+                                <a href="{{ url_for('finance.edit_item', id=item.id) }}" class="btn btn-sm btn-outline-success">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#deleteModal{{ item.id }}">
@@ -65,15 +68,15 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title">Delete Item</h5>
+                                            <h5 class="modal-title">Delete Transaction</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            Are you sure you want to delete "{{ item.item_name }}"?
+                                            Are you sure you want to delete "{{ item.transaction_name }}"?
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            <form action="{{ url_for('inventory.delete_item', id=item.id) }}" method="POST" class="d-inline">
+                                            <form action="{{ url_for('finance.delete_item', id=item.id) }}" method="POST" class="d-inline">
                                                 <button type="submit" class="btn btn-outline-success">Delete</button>
                                             </form>
                                         </div>
@@ -88,11 +91,11 @@
             {% else %}
             <div class="text-center py-4">
                 <div class="empty-state">
-                    <i class="fas fa-boxes fa-3x mb-3 text-muted"></i>
-                    <h3>No Items Found</h3>
-                    <p class="text-muted">Start by adding your first inventory item.</p>
-                    <a href="{{ url_for('inventory.add_item', mosque_id=mosque.id) }}" class="btn btn-success mt-3">
-                        <i class="fas fa-plus"></i> Add First Item
+                    <i class="fas fa-money-bill-wave fa-3x mb-3 text-muted"></i>
+                    <h3>No Transactions Found</h3>
+                    <p class="text-muted">Start by adding your first financial transaction.</p>
+                    <a href="{{ url_for('finance.add_item', mosque_id=mosque.id) }}" class="btn btn-success mt-3">
+                        <i class="fas fa-plus"></i> Add First Transaction
                     </a>
                 </div>
             </div>

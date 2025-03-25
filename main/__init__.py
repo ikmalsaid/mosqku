@@ -21,16 +21,18 @@ def create_app():
     from .models.announcement import Announcement
 
     # Import blueprints
-    from .controllers.auth import auth
-    from .controllers.mosque import mosque
-    from .controllers.admin import admin
-    from .controllers.inventory import inventory
+    from .controllers.auth import auth as auth_blueprint
+    from .controllers.admin import admin as admin_blueprint
+    from .controllers.mosque import mosque as mosque_blueprint
+    from .controllers.inventory import inventory as inventory_blueprint
+    from .controllers.finance import finance as finance_blueprint
     
     # Register blueprints - Note that mosque blueprint is registered first to handle root URL
-    app.register_blueprint(mosque)
-    app.register_blueprint(auth, url_prefix='/auth')
-    app.register_blueprint(admin, url_prefix='/admin')
-    app.register_blueprint(inventory)
+    app.register_blueprint(mosque_blueprint)
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    app.register_blueprint(admin_blueprint, url_prefix='/admin')
+    app.register_blueprint(inventory_blueprint)
+    app.register_blueprint(finance_blueprint)
 
     # Initialize Login Manager
     login_manager = LoginManager()

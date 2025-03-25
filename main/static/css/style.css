@@ -419,11 +419,9 @@ body {
     background: white;
     border-radius: 15px;
     padding: 3rem;
-    border: 1px solid rgba(0, 100, 0, 0.1);
 }
 
 .empty-state i {
-    color: var(--primary-color);
     opacity: 1;
 }
 

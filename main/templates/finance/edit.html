@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Transaction{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2><i class="fas fa-edit"></i> Edit Transaction</h2>
+            <p class="text-muted mb-0">{{ mosque.name }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mt-4">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="number" class="form-label">Transaction Number</label>
+                            <input type="text" class="form-control" id="number" name="number" value="{{ item.number }}" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="transaction_name" class="form-label">Transaction Name</label>
+                            <input type="text" class="form-control" id="transaction_name" name="transaction_name" value="{{ item.transaction_name }}" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="finance_category" class="form-label">Category</label>
+                            <select class="form-select" id="finance_category" name="finance_category" required>
+                                <option value="" disabled>Select category</option>
+                                <optgroup label="Income">
+                                    <option value="Donation" {{ 'selected' if item.finance_category == 'Donation' }}>Donation</option>
+                                    <option value="Government Grant" {{ 'selected' if item.finance_category == 'Government Grant' }}>Government Grant</option>
+                                    <option value="Zakat" {{ 'selected' if item.finance_category == 'Zakat' }}>Zakat</option>
+                                    <option value="Rental" {{ 'selected' if item.finance_category == 'Rental' }}>Rental</option>
+                                    <option value="Other Income" {{ 'selected' if item.finance_category == 'Other Income' }}>Other Income</option>
+                                </optgroup>
+                                <optgroup label="Expenses">
+                                    <option value="Utilities" {{ 'selected' if item.finance_category == 'Utilities' }}>Utilities</option>
+                                    <option value="Maintenance" {{ 'selected' if item.finance_category == 'Maintenance' }}>Maintenance</option>
+                                    <option value="Staff Salary" {{ 'selected' if item.finance_category == 'Staff Salary' }}>Staff Salary</option>
+                                    <option value="Events" {{ 'selected' if item.finance_category == 'Events' }}>Events</option>
+                                    <option value="Supplies" {{ 'selected' if item.finance_category == 'Supplies' }}>Supplies</option>
+                                    <option value="Other Expenses" {{ 'selected' if item.finance_category == 'Other Expenses' }}>Other Expenses</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="amount" class="form-label">Amount (RM)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">RM</span>
+                                <input type="number" step="0.01" class="form-control" id="amount" name="amount" value="{{ item.amount }}" required>
+                                <div class="form-text text-muted">Use negative value for expenses (e.g., -100.00)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3">{{ item.description }}</textarea>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="remarks" class="form-label">Remarks</label>
+                            <textarea class="form-control" id="remarks" name="remarks" rows="2">{{ item.remarks }}</textarea>
+                        </div>
+                        
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <button type="button" onclick="goBack()" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

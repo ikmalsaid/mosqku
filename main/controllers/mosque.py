@@ -80,7 +80,7 @@ def dashboard():
             user=current_user,
             mosque=mosque,
             prayer_times=prayer_times,
-            announcements=active_announcements,
+            active_announcements=active_announcements,
             assigned_admins=assigned_admins
         )
     return render_template("mosque/dashboard.html", user=current_user)
@@ -106,7 +106,7 @@ def mosque_details(id):
         assigned_admins=assigned_admins
     )
 
-@mosque.route('/prayer-times/<int:mosque_id>', methods=['GET', 'POST'])
+@mosque.route('/prayer_times/<int:mosque_id>', methods=['GET', 'POST'])
 @login_required
 def prayer_times(mosque_id):
     if current_user.mosque_id != mosque_id and current_user.role != 'superadmin':
@@ -139,7 +139,7 @@ def prayer_times(mosque_id):
         mosque_id=mosque_id
     )
 
-@mosque.route('/prayer-times/delete/<int:id>', methods=['POST'])
+@mosque.route('/prayer_times/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_prayer_time(id):
     prayer_time = PrayerTime.query.get_or_404(id)
