@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}{{ mosque.name }}{% endblock %}
+{% block title %}Mosque Details{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.home') }}" class="text-success">Home</a></li>
+<li class="breadcrumb-item active">Mosque Details</li>
+{% endblock %}
 
 {% block content %}
 <div class="dashboard-header">

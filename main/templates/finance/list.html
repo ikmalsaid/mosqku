@@ -2,6 +2,11 @@
 
 {% block title %}Finance Management{% endblock %}
 
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.dashboard') }}" class="text-success">Mosque Dashboard</a></li>
+<li class="breadcrumb-item active">Manage Finance</li>
+{% endblock %}
+
 {% block content %}
 <div class="dashboard-header">
     <div class="row align-items-center">

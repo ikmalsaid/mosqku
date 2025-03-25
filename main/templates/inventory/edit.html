@@ -2,6 +2,12 @@
 
 {% block title %}Edit Inventory Item{% endblock %}
 
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.dashboard') }}" class="text-success">Mosque Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('inventory.inventory_list', mosque_id=mosque.id) }}" class="text-success">Manage Inventory</a></li>
+<li class="breadcrumb-item active">Edit Item</li>
+{% endblock %}
+
 {% block content %}
 <div class="dashboard-header">
     <div class="row align-items-center">

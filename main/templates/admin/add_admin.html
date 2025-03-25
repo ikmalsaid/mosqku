@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Add Administrator{% endblock %}
+{% block title %}Add Admin{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.dashboard') }}" class="text-success">Mosque Dashboard</a></li>
+<li class="breadcrumb-item active">Add Admin</li>
+{% endblock %}
 
 {% block content %}
 <div class="dashboard-header">

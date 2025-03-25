@@ -2,6 +2,30 @@
 
 {% block title %}Login{% endblock %}
 
+{% set hide_breadcrumbs = true %}
+
+{% block styles %}
+<style>
+    .password-field {
+        position: relative;
+    }
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: none;
+        color: #6c757d;
+        cursor: pointer;
+        padding: 0;
+    }
+    .password-toggle:hover {
+        color: #198754;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="row justify-content-center align-items-center min-vh-75">
@@ -27,7 +51,12 @@
                             <label for="password" class="form-label">
                                 <i class="fas fa-lock"></i> Password
                             </label>
-                            <input type="password" class="form-control" id="password" name="password" required>
+                            <div class="password-field">
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')" tabindex="-1">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
                         </div>
                         
                         <div class="d-grid gap-2">
@@ -50,4 +79,22 @@
         </div>
     </div>
 </div>
+
+<script>
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const button = field.nextElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        field.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+</script>
 {% endblock %} 

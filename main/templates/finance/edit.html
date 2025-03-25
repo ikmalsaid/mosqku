@@ -2,6 +2,12 @@
 
 {% block title %}Edit Transaction{% endblock %}
 
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.dashboard') }}" class="text-success">Mosque Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('finance.finance_list', mosque_id=mosque.id) }}" class="text-success">Manage Finance</a></li>
+<li class="breadcrumb-item active">Edit Transaction</li>
+{% endblock %}
+
 {% block content %}
 <div class="dashboard-header">
     <div class="row align-items-center">

@@ -2,6 +2,10 @@
 
 {% block title %}Mosque Dashboard{% endblock %}
 
+{% block breadcrumbs %}
+<li class="breadcrumb-item active">Mosque Dashboard</li>
+{% endblock %}
+
 {% block content %}
 {% if not user.mosque_id %}
     <div class="text-center py-5">

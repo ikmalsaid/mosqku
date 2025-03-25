@@ -61,7 +61,7 @@ def create_database(app):
             if not default_admin:
                 default_admin = User(
                     email='admin@mosqku.com',
-                    name='Super Admin',
+                    name='superadmin',
                     password=generate_password_hash('Admin@123', method='scrypt'),
                     role='superadmin'
                 )
