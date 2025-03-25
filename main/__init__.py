@@ -24,11 +24,13 @@ def create_app():
     from .controllers.auth import auth
     from .controllers.mosque import mosque
     from .controllers.admin import admin
+    from .controllers.inventory import inventory
     
     # Register blueprints - Note that mosque blueprint is registered first to handle root URL
-    app.register_blueprint(mosque)  # No URL prefix for mosque as it handles root URL
+    app.register_blueprint(mosque)
     app.register_blueprint(auth, url_prefix='/auth')
     app.register_blueprint(admin, url_prefix='/admin')
+    app.register_blueprint(inventory)
 
     # Initialize Login Manager
     login_manager = LoginManager()
@@ -58,7 +60,7 @@ def create_database(app):
                 default_admin = User(
                     email='admin@mosqku.com',
                     name='Super Admin',
-                    password=generate_password_hash('Admin@123', method='sha256'),
+                    password=generate_password_hash('Admin@123', method='scrypt'),
                     role='superadmin'
                 )
                 db.session.add(default_admin)

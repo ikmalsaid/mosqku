@@ -48,7 +48,7 @@ def register():
             new_user = User(
                 email=email,
                 name=name,
-                password=generate_password_hash(password, method='sha256'),
+                password=generate_password_hash(password, method='scrypt'),
                 role='user'
             )
             db.session.add(new_user)
@@ -76,7 +76,7 @@ def change_password():
         elif len(new_password) < 8:
             flash('Password must be at least 8 characters.', category='error')
         else:
-            current_user.password = generate_password_hash(new_password, method='sha256')
+            current_user.password = generate_password_hash(new_password, method='scrypt')
             db.session.commit()
             flash('Password updated successfully!', category='success')
             return redirect(url_for('mosque.dashboard'))

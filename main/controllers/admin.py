@@ -93,7 +93,7 @@ def add_admin():
                 new_admin = User(
                     email=email,
                     name=name,
-                    password=generate_password_hash(password, method='sha256'),
+                    password=generate_password_hash(password, method='scrypt'),
                     role='admin',
                     mosque_id=mosque_id
                 )
@@ -220,7 +220,7 @@ def reset_admin_password(admin_id):
         elif len(new_password) < 8:
             flash('Password must be at least 8 characters.', category='error')
         else:
-            admin.password = generate_password_hash(new_password, method='sha256')
+            admin.password = generate_password_hash(new_password, method='scrypt')
             db.session.commit()
             flash('Password reset successfully!', category='success')
             return redirect(url_for('admin.dashboard'))

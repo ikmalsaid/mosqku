@@ -40,6 +40,16 @@
                             <i class="fas fa-bullhorn"></i> Manage Announcements
                         </a>
                     </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ url_for('inventory.inventory_list', mosque_id=mosque.id) }}">
+                            <i class="fas fa-boxes"></i> Manage Inventory
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-money-bill-wave"></i> Manage Finance
+                        </a>
+                    </li>
                     {% if user.role == 'admin' %}
                     <li>
                         <a class="dropdown-item" href="{{ url_for('admin.add_admin') }}">
