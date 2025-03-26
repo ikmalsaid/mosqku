@@ -30,6 +30,17 @@
                 <h4><i class="fas fa-plus-circle"></i> Add Prayer Time</h4>
             </div>
             <div class="card-body">
+                <div class="mb-3">
+                    <button type="button" class="btn btn-outline-success w-100" id="autoFillBtn" onclick="fetchJakimPrayerTimes()">
+                        <i class="fas fa-cloud-download-alt"></i> Auto-fill Prayer Times from JAKIM
+                    </button>
+                </div>
+                <div id="importProgress" class="d-none">
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                    </div>
+                    <p class="text-center text-muted small">Importing prayer times...</p>
+                </div>
                 <form method="POST" id="prayerTimeForm">
                     <div class="mb-3">
                         <label for="prayer_name" class="form-label">Prayer Name</label>
@@ -84,8 +95,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for prayer in prayer_times|sort(attribute='order,date,time') %}
-                            <tr>
+                            {% for prayer in prayer_times|sort(attribute='date,order,time') %}
+                            <tr{% if ((loop.index0 // 7) % 2) == 1 %} class="table-light"{% endif %}>
                                 <td>{{ prayer.prayer_name }}</td>
                                 <td>{{ prayer.date.strftime('%d %B %Y') }}</td>
                                 <td>{{ prayer.time.strftime('%I:%M %p') }}</td>
@@ -136,5 +147,155 @@ document.getElementById('prayerTimeForm').addEventListener('submit', function() 
         }, 100);
     }
 });
+
+// Convert Unix timestamp to HH:mm format
+function formatTime(timestamp) {
+    const date = new Date(timestamp * 1000);
+    return date.toTimeString().slice(0, 5);
+}
+
+// Calculate Imsak time (10 minutes before Subuh)
+function calculateImsakTime(subuhTime) {
+    const [hours, minutes] = subuhTime.split(':').map(Number);
+    let totalMinutes = hours * 60 + minutes - 10;
+    
+    // Handle case where Imsak time goes to previous day
+    if (totalMinutes < 0) {
+        totalMinutes += 24 * 60;
+    }
+    
+    const imsakHours = Math.floor(totalMinutes / 60);
+    const imsakMinutes = totalMinutes % 60;
+    
+    return `${imsakHours.toString().padStart(2, '0')}:${imsakMinutes.toString().padStart(2, '0')}`;
+}
+
+// Convert prayer name from API to match our format
+function convertPrayerName(apiName) {
+    const mapping = {
+        'fajr': 'Subuh',
+        'syuruk': 'Syuruk',
+        'dhuhr': 'Zuhur',
+        'asr': 'Asar',
+        'maghrib': 'Maghrib',
+        'isha': 'Isyak'
+    };
+    return mapping[apiName] || apiName;
+}
+
+// Format date as YYYY-MM-DD for input field
+function formatDate(year, month, day) {
+    const monthNum = new Date(Date.parse(month + " 1, 2000")).getMonth() + 1;
+    return `${year}-${monthNum.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+}
+
+// Show/hide loading indicator
+function toggleLoading(show) {
+    const btn = document.getElementById('autoFillBtn');
+    const progress = document.getElementById('importProgress');
+    
+    if (show) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importing...';
+        progress.classList.remove('d-none');
+    } else {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Auto-fill Prayer Times from JAKIM';
+        progress.classList.add('d-none');
+    }
+}
+
+// Fetch and process prayer times from JAKIM API
+async function fetchJakimPrayerTimes() {
+    try {
+        const jakimCode = '{{ mosque.jakim_code }}';
+        if (!jakimCode) {
+            alert('No JAKIM zone code set for this mosque.');
+            return;
+        }
+
+        toggleLoading(true);
+
+        const response = await fetch(`https://api.waktusolat.app/v2/solat/${jakimCode}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch prayer times');
+        }
+
+        const data = await response.json();
+        const prayers = data.prayers;
+        
+        // Prepare batch data
+        const batchData = [];
+        
+        // Process each day's prayer times
+        for (const prayer of prayers) {
+            const date = formatDate(data.year, data.month, prayer.day);
+            
+            // Get Subuh time first to calculate Imsak
+            const subuhTime = formatTime(prayer.fajr);
+            const imsakTime = calculateImsakTime(subuhTime);
+            
+            const prayerTimes = {
+                'fajr': prayer.fajr,
+                'syuruk': prayer.syuruk,
+                'dhuhr': prayer.dhuhr,
+                'asr': prayer.asr,
+                'maghrib': prayer.maghrib,
+                'isha': prayer.isha
+            };
+
+            // Add Imsak time first (it should appear first in the list)
+            batchData.push({
+                prayer_name: 'Imsak',
+                time: imsakTime,
+                date: date
+            });
+
+            // Add other prayer times
+            for (const [apiName, timestamp] of Object.entries(prayerTimes)) {
+                batchData.push({
+                    prayer_name: convertPrayerName(apiName),
+                    time: formatTime(timestamp),
+                    date: date
+                });
+            }
+        }
+
+        // Send batch import request
+        const importResponse = await fetch('{{ url_for("mosque.import_prayer_times", mosque_id=mosque.id) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prayer_times: batchData })
+        });
+
+        if (!importResponse.ok) {
+            throw new Error('Failed to import prayer times');
+        }
+
+        const result = await importResponse.json();
+        
+        if (result.success) {
+            // Show appropriate message based on status
+            if (result.status === 'no_changes') {
+                // All prayer times already exist
+                alert(result.message);
+            } else {
+                // Show success message with details
+                alert(result.message);
+            }
+            // Always refresh to ensure view is up to date
+            window.location.reload();
+        } else {
+            throw new Error(result.message || 'Failed to import prayer times');
+        }
+    } catch (error) {
+        console.error('Error importing prayer times:', error);
+        alert('Failed to import prayer times. Please try again later.');
+    } finally {
+        toggleLoading(false);
+    }
+}
 </script>
 {% endblock %} 

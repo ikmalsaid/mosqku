@@ -152,7 +152,7 @@
         <div class="col-md-4">
             <div class="card h-100 dashboard-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4><i class="fas fa-clock"></i> Today's Prayer Times ({{ prayer_times|length }})</h4>
+                    <h4><i class="fas fa-clock"></i> Prayer Times ({{ now.strftime('%d %B %Y') }})</h4>
                 </div>
                 <div class="card-body">
                     {% if prayer_times %}
@@ -166,7 +166,7 @@
                             {% if prayer_times|length > 5 %}
                             <div class="text-end mt-3">
                                 <a href="{{ url_for('mosque.prayer_times', mosque_id=mosque.id) }}" class="text-success text-decoration-none">
-                                    See all {{ prayer_times|length }} prayer time(s) <i class="fas fa-chevron-right"></i>
+                                    View Prayer Times Schedule <i class="fas fa-chevron-right"></i>
                                 </a>
                             </div>
                             {% endif %}

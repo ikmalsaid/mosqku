@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from ..models.mosque import Mosque
 from ..models.prayer_time import PrayerTime
@@ -84,7 +84,8 @@ def dashboard():
             mosque=mosque,
             prayer_times=prayer_times,
             active_announcements=active_announcements,
-            assigned_admins=assigned_admins
+            assigned_admins=assigned_admins,
+            now=date.today()
         )
     return render_template("mosque/dashboard.html", user=current_user)
 
@@ -163,6 +164,76 @@ def delete_prayer_time(id):
         flash('Error deleting prayer time.', category='error')
     
     return redirect(url_for('mosque.prayer_times', mosque_id=mosque_id))
+
+@mosque.route('/prayer_times/<int:mosque_id>/import', methods=['POST'])
+@login_required
+def import_prayer_times(mosque_id):
+    if current_user.mosque_id != mosque_id and current_user.role != 'superadmin':
+        return jsonify({'success': False, 'message': 'Unauthorized access.'}), 403
+        
+    mosque = Mosque.query.get_or_404(mosque_id)
+    
+    try:
+        data = request.get_json()
+        prayer_times = data.get('prayer_times', [])
+        
+        # Begin transaction
+        duplicates = 0
+        added = 0
+        
+        for prayer_data in prayer_times:
+            # Check if prayer time already exists
+            existing = PrayerTime.query.filter_by(
+                mosque_id=mosque_id,
+                prayer_name=prayer_data['prayer_name'],
+                date=datetime.strptime(prayer_data['date'], '%Y-%m-%d').date()
+            ).first()
+            
+            if not existing:
+                prayer_time = PrayerTime(
+                    prayer_name=prayer_data['prayer_name'],
+                    time=datetime.strptime(prayer_data['time'], '%H:%M').time(),
+                    date=datetime.strptime(prayer_data['date'], '%Y-%m-%d').date(),
+                    mosque_id=mosque_id
+                )
+                db.session.add(prayer_time)
+                added += 1
+            else:
+                duplicates += 1
+        
+        # Always commit if there are any additions
+        if added > 0:
+            db.session.commit()
+            
+        # Return appropriate response
+        total = added + duplicates
+        if added == 0 and duplicates > 0:
+            return jsonify({
+                'success': True,
+                'status': 'no_changes',
+                'message': f'All {duplicates} prayer times already exist for these dates.',
+                'added': added,
+                'duplicates': duplicates,
+                'total': total
+            })
+        else:
+            return jsonify({
+                'success': True,
+                'status': 'imported',
+                'message': f'Successfully imported {added} prayer times. {duplicates} duplicates were skipped.',
+                'added': added,
+                'duplicates': duplicates,
+                'total': total
+            })
+        
+    except Exception as e:
+        db.session.rollback()
+        print('Error importing prayer times:', str(e))
+        return jsonify({
+            'success': False,
+            'status': 'error',
+            'message': 'Failed to import prayer times. Please try again.'
+        }), 500
 
 @mosque.route('/announcements', methods=['GET', 'POST'])
 @login_required
