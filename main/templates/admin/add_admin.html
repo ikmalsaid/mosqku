@@ -64,7 +64,7 @@
                         <select class="form-select" id="mosque_id" name="mosque_id" required>
                             <option value="" disabled selected>Select a mosque</option>
                             {% for mosque in mosques %}
-                            <option value="{{ mosque.id }}">{{ mosque.name }}</option>
+                            <option value="{{ mosque.id }}">{{ mosque.name }} ({{ mosque.city }}, {{ mosque.state }})</option>
                             {% endfor %}
                         </select>
                     </div>

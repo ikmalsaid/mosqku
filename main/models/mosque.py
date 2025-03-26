@@ -8,6 +8,7 @@ class Mosque(db.Model):
     city = db.Column(db.String(100), nullable=False)
     state = db.Column(db.String(100), nullable=False)
     country = db.Column(db.String(100), nullable=False)
+    jakim_code = db.Column(db.String(10), nullable=False)
     phone = db.Column(db.String(20))
     email = db.Column(db.String(150))
     capacity = db.Column(db.Integer)

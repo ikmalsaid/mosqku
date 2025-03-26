@@ -28,6 +28,7 @@ def register_mosque():
         phone = request.form.get('phone')
         email = request.form.get('email')
         capacity = request.form.get('capacity')
+        jakim_code = request.form.get('jakim_code')
         
         try:
             mosque = Mosque(
@@ -38,7 +39,8 @@ def register_mosque():
                 country=country,
                 phone=phone,
                 email=email,
-                capacity=capacity
+                capacity=capacity,
+                jakim_code=jakim_code
             )
             db.session.add(mosque)
             db.session.commit()

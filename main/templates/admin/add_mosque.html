@@ -52,17 +52,77 @@
                                 <label for="state" class="form-label">
                                     <i class="fas fa-map"></i> State/Province
                                 </label>
-                                <input type="text" class="form-control" id="state" name="state" required>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="" disabled selected>Select state</option>
+                                    {% for state in ['Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan', 'Pahang', 'Perak', 'Perlis', 'Pulau Pinang', 'Sabah', 'Sarawak', 'Selangor', 'Terengganu', 'Kuala Lumpur', 'Labuan', 'Putrajaya'] %}
+                                    <option value="{{ state }}">{{ state }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="jakim_code" class="form-label">
+                                    <i class="fas fa-clock"></i> JAKIM Prayer Time Zone
+                                </label>
+                                <select class="form-select" id="jakim_code" name="jakim_code" required>
+                                    <option value="" disabled selected>Select prayer time zone</option>
+                                    <optgroup label="Johor">
+                                        <option value="JHR01">JHR01 (Pulau Aur dan Pulau Pemanggil)</option>
+                                        <option value="JHR02">JHR02 (Johor Bahru, Kota Tinggi, Mersing, Kulai)</option>
+                                        <option value="JHR03">JHR03 (Kluang, Pontian)</option>
+                                        <option value="JHR04">JHR04 (Batu Pahat, Muar, Segamat, Gemas Johor, Tangkak)</option>
+                                    </optgroup>
+                                    <optgroup label="Kedah">
+                                        <option value="KDH01">KDH01 (Kota Setar, Kubang Pasu, Pokok Sena)</option>
+                                        <option value="KDH02">KDH02 (Kuala Muda, Yan, Pendang)</option>
+                                        <option value="KDH03">KDH03 (Padang Terap, Sik)</option>
+                                        <option value="KDH04">KDH04 (Baling)</option>
+                                        <option value="KDH05">KDH05 (Bandar Baharu, Kulim)</option>
+                                        <option value="KDH06">KDH06 (Langkawi)</option>
+                                        <option value="KDH07">KDH07 (Puncak Gunung Jerai)</option>
+                                    </optgroup>
+                                    <optgroup label="Kelantan">
+                                        <option value="KTN01">KTN01 (Bachok, Kota Bharu, Machang, Pasir Mas, dan lain-lain)</option>
+                                        <option value="KTN02">KTN02 (Gua Musang, Jeli, Lojing)</option>
+                                    </optgroup>
+                                    <optgroup label="Melaka">
+                                        <option value="MLK01">MLK01 (Whole of Melaka)</option>
+                                    </optgroup>
+                                    <optgroup label="Negeri Sembilan">
+                                        <option value="NGS01">NGS01 (Tampin, Jempol)</option>
+                                        <option value="NGS02">NGS02 (Jelebu, Kuala Pilah, Rembau)</option>
+                                        <option value="NGS03">NGS03 (Port Dickson, Seremban)</option>
+                                    </optgroup>
+                                    <optgroup label="Pahang">
+                                        <option value="PHG01">PHG01 (Pulau Tioman)</option>
+                                        <option value="PHG02">PHG02 (Kuantan, Pekan, Muadzam Shah)</option>
+                                        <option value="PHG03">PHG03 (Jerantut, Temerloh, Maran, dan lain-lain)</option>
+                                        <option value="PHG04">PHG04 (Bentong, Lipis, Raub)</option>
+                                        <option value="PHG05">PHG05 (Genting Sempah, Janda Baik, Bukit Tinggi)</option>
+                                        <option value="PHG06">PHG06 (Cameron Highlands, Genting Highlands, Bukit Fraser)</option>
+                                        <option value="PHG07">PHG07 (Rompin, Endau, Pontian)</option>
+                                    </optgroup>
+                                    <optgroup label="Perak">
+                                        <option value="PRK01">PRK01 (Tapah, Slim River, Tanjung Malim)</option>
+                                        <option value="PRK02">PRK02 (Kuala Kangsar, Sg. Siput, Ipoh, dan lain-lain)</option>
+                                        <option value="PRK03">PRK03 (Lenggong, Pengkalan Hulu, Grik)</option>
+                                        <option value="PRK04">PRK04 (Temengor, Belum)</option>
+                                        <option value="PRK05">PRK05 (Kg Gajah, Teluk Intan, Bagan Datuk, dan lain-lain)</option>
+                                        <option value="PRK06">PRK06 (Selama, Taiping, Bagan Serai, Parit Buntar)</option>
+                                        <option value="PRK07">PRK07 (Bukit Larut)</option>
+                                    </optgroup>
+                                    <optgroup label="Perlis">
+                                        <option value="PLS01">PLS01 (Whole of Perlis)</option>
+                                    </optgroup>
+                                    <optgroup label="Pulau Pinang">
+                                        <option value="PNG01">PNG01 (Whole of Pulau Pinang)</option>
+                                    </optgroup>
+                                </select>
                             </div>
                         </div>
                         
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="country" class="form-label">
-                                    <i class="fas fa-globe"></i> Country
-                                </label>
-                                <input type="text" class="form-control" id="country" name="country" required>
-                            </div>
+                            <input type="hidden" id="country" name="country" value="Malaysia">
                             
                             <div class="mb-3">
                                 <label for="phone" class="form-label">
