@@ -3,7 +3,12 @@
 {% block title %}Manage Prayer Times{% endblock %}
 
 {% block breadcrumbs %}
+{% if user.role == 'superadmin' %}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}" class="text-success">Admin Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" class="text-success">Mosque Details</a></li>
+{% else %}
 <li class="breadcrumb-item"><a href="{{ url_for('mosque.dashboard') }}" class="text-success">Mosque Dashboard</a></li>
+{% endif %}
 <li class="breadcrumb-item active">Manage Prayer Times</li>
 {% endblock %}
 
@@ -25,7 +30,7 @@
                 <h4><i class="fas fa-plus-circle"></i> Add Prayer Time</h4>
             </div>
             <div class="card-body">
-                <form method="POST">
+                <form method="POST" id="prayerTimeForm">
                     <div class="mb-3">
                         <label for="prayer_name" class="form-label">Prayer Name</label>
                         <select class="form-select" id="prayer_name" name="prayer_name" required>
@@ -79,7 +84,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for prayer in prayer_times|sort(attribute='date,time') %}
+                            {% for prayer in prayer_times|sort(attribute='order,date,time') %}
                             <tr>
                                 <td>{{ prayer.prayer_name }}</td>
                                 <td>{{ prayer.date.strftime('%d %B %Y') }}</td>
@@ -111,8 +116,25 @@
 </div>
 
 <div class="mt-4">
-    <button onclick="goBack()" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Back
-    </button>
+    {% if user.role == 'superadmin' %}
+    <a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Mosque Details
+    </a>
+    {% else %}
+    <a href="{{ url_for('mosque.dashboard') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+    {% endif %}
 </div>
+
+<script>
+// Reset form after successful submission
+document.getElementById('prayerTimeForm').addEventListener('submit', function() {
+    if (this.checkValidity()) {
+        setTimeout(() => {
+            this.reset();
+        }, 100);
+    }
+});
+</script>
 {% endblock %} 

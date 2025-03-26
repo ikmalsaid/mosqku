@@ -2,6 +2,17 @@
 
 {% block title %}Edit Announcement{% endblock %}
 
+{% block breadcrumbs %}
+{% if user.role == 'superadmin' %}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}" class="text-success">Admin Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.mosque_details', id=announcement.mosque_id) }}" class="text-success">Mosque Details</a></li>
+{% else %}
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.dashboard') }}" class="text-success">Mosque Dashboard</a></li>
+{% endif %}
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.announcements') }}" class="text-success">Manage Announcements</a></li>
+<li class="breadcrumb-item active">Edit Announcement</li>
+{% endblock %}
+
 {% block content %}
 <div class="dashboard-header">
     <div class="row align-items-center">
@@ -64,9 +75,9 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Update Announcement
                         </button>
-                        <button type="button" onclick="goBack()" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </button>
+                        <a href="{{ url_for('mosque.announcements') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Announcements
+                        </a>
                     </div>
                 </form>
             </div>

@@ -3,7 +3,12 @@
 {% block title %}Manage Announcements{% endblock %}
 
 {% block breadcrumbs %}
+{% if user.role == 'superadmin' %}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}" class="text-success">Admin Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" class="text-success">Mosque Details</a></li>
+{% else %}
 <li class="breadcrumb-item"><a href="{{ url_for('mosque.dashboard') }}" class="text-success">Mosque Dashboard</a></li>
+{% endif %}
 <li class="breadcrumb-item active">Manage Announcements</li>
 {% endblock %}
 
@@ -25,7 +30,7 @@
                 <h4><i class="fas fa-plus-circle"></i> Add Announcement</h4>
             </div>
             <div class="card-body">
-                <form method="POST">
+                <form method="POST" id="announcementForm">
                     <div class="mb-3">
                         <label for="title" class="form-label">Title</label>
                         <input type="text" class="form-control" id="title" name="title" required>
@@ -113,8 +118,27 @@
 </div>
 
 <div class="mt-4">
-    <button type="button" onclick="goBack()" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Back
-    </button>
+    {% if user.role == 'superadmin' %}
+    <a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Mosque Details
+    </a>
+    {% else %}
+    <a href="{{ url_for('mosque.dashboard') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+    {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Reset form after successful submission
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            {% if category == 'success' and 'added successfully' in message %}
+                document.getElementById('announcementForm').reset();
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
+});
+</script>
 {% endblock %} 

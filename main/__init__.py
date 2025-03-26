@@ -59,14 +59,17 @@ def create_database(app):
             
             default_admin = User.query.filter_by(email='admin@mosqku.com').first()
             if not default_admin:
+                recovery_key = User.generate_recovery_key()
                 default_admin = User(
                     email='admin@mosqku.com',
                     name='superadmin',
                     password=generate_password_hash('Admin@123', method='scrypt'),
-                    role='superadmin'
+                    role='superadmin',
+                    recovery_key=recovery_key
                 )
                 db.session.add(default_admin)
                 db.session.commit()
-                print('Created default superadmin account!')
+                print(f'Created superadmin account: {default_admin.email}')
+                print(f'Default superadmin recovery key: {recovery_key}')
             
-            print('Created Database!') 
+            print(f'Created database: {path.join(app.instance_path, DB_NAME)}')

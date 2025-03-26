@@ -31,7 +31,7 @@ def dashboard():
         mosque_dict=mosque_dict
     )
 
-@admin.route('/mosque/add', methods=['GET', 'POST'])
+@admin.route('/add_mosque', methods=['GET', 'POST'])
 @login_required
 def add_mosque():
     if current_user.role != 'superadmin':
@@ -68,10 +68,10 @@ def add_mosque():
             
     return render_template("admin/add_mosque.html", user=current_user)
 
-@admin.route('/admin/add', methods=['GET', 'POST'])
+@admin.route('/add_admin', methods=['GET', 'POST'])
 @login_required
 def add_admin():
-    if current_user.role not in ['admin', 'superadmin']:
+    if current_user.role != 'superadmin':
         flash('Unauthorized access.', category='error')
         return redirect(url_for('mosque.dashboard'))
         
@@ -81,38 +81,28 @@ def add_admin():
         password = request.form.get('password')
         mosque_id = request.form.get('mosque_id')
         
-        if current_user.role == 'admin' and int(mosque_id) != current_user.mosque_id:
-            flash('Unauthorized access.', category='error')
-            return redirect(url_for('mosque.dashboard'))
-            
         user = User.query.filter_by(email=email).first()
         if user:
             flash('Email already exists.', category='error')
         else:
             try:
+                recovery_key = User.generate_recovery_key()
                 new_admin = User(
                     email=email,
                     name=name,
                     password=generate_password_hash(password, method='scrypt'),
                     role='admin',
-                    mosque_id=mosque_id
+                    mosque_id=mosque_id,
+                    recovery_key=recovery_key
                 )
                 db.session.add(new_admin)
                 db.session.commit()
-                flash('Admin added successfully!', category='success')
-                # Redirect based on user role
-                if current_user.role == 'superadmin':
-                    return redirect(url_for('admin.dashboard'))
-                else:
-                    return redirect(url_for('mosque.dashboard'))
+                flash(f'Admin added successfully! Recovery key is: {recovery_key} - Please save this in a secure place.', category='success')
+                return redirect(url_for('admin.dashboard'))
             except Exception as e:
                 flash('Error adding admin.', category='error')
                 
-    if current_user.role == 'superadmin':
-        mosques = Mosque.query.all()
-    else:
-        mosques = [Mosque.query.get(current_user.mosque_id)]
-        
+    mosques = Mosque.query.all()
     return render_template("admin/add_admin.html", user=current_user, mosques=mosques)
 
 @admin.route('/mosque/edit/<int:id>', methods=['GET', 'POST'])
@@ -200,7 +190,7 @@ def delete_mosque_announcement(id):
     
     return redirect(url_for('admin.mosque_announcements', mosque_id=mosque_id))
 
-@admin.route('/admin/reset-password/<int:admin_id>', methods=['GET', 'POST'])
+@admin.route('/reset_password/<int:admin_id>', methods=['GET', 'POST'])
 @login_required
 def reset_admin_password(admin_id):
     if current_user.role != 'superadmin':
@@ -227,7 +217,7 @@ def reset_admin_password(admin_id):
             
     return render_template("admin/reset_password.html", user=current_user, admin=admin)
 
-@admin.route('/admin/delete/<int:admin_id>', methods=['POST'])
+@admin.route('/delete_admin/<int:admin_id>', methods=['POST'])
 @login_required
 def delete_admin(admin_id):
     if current_user.role != 'superadmin':
@@ -248,7 +238,7 @@ def delete_admin(admin_id):
         
     return redirect(url_for('admin.dashboard'))
 
-@admin.route('/admin/reassign-mosque/<int:admin_id>', methods=['GET', 'POST'])
+@admin.route('/reassign_mosque/<int:admin_id>', methods=['GET', 'POST'])
 @login_required
 def reassign_mosque(admin_id):
     if current_user.role != 'superadmin':
@@ -270,7 +260,7 @@ def reassign_mosque(admin_id):
             
     return render_template("admin/reassign_mosque.html", user=current_user, admin=admin, mosques=mosques)
 
-@admin.route('/mosque/delete/<int:mosque_id>', methods=['POST'])
+@admin.route('/delete_mosque/<int:mosque_id>', methods=['POST'])
 @login_required
 def delete_mosque(mosque_id):
     if current_user.role != 'superadmin':

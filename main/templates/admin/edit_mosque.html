@@ -2,6 +2,11 @@
 
 {% block title %}Edit Mosque{% endblock %}
 
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}" class="text-success">Admin Dashboard</a></li>
+<li class="breadcrumb-item active">Edit Mosque</li>
+{% endblock %}
+
 {% block content %}
 <div class="dashboard-header">
     <div class="row align-items-center">
@@ -18,80 +23,57 @@
             <div class="card-header">
                 <h4><i class="fas fa-info-circle"></i> Mosque Information</h4>
             </div>
-            <div class="card-body p-4">
+            <div class="card-body">
                 <form method="POST">
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="name" class="form-label">
-                                    <i class="fas fa-building"></i> Mosque Name
-                                </label>
-                                <input type="text" class="form-control" id="name" name="name" value="{{ mosque.name }}" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="address" class="form-label">
-                                    <i class="fas fa-map-marker-alt"></i> Address
-                                </label>
-                                <input type="text" class="form-control" id="address" name="address" value="{{ mosque.address }}" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="city" class="form-label">
-                                    <i class="fas fa-city"></i> City
-                                </label>
-                                <input type="text" class="form-control" id="city" name="city" value="{{ mosque.city }}" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="state" class="form-label">
-                                    <i class="fas fa-map"></i> State/Province
-                                </label>
-                                <input type="text" class="form-control" id="state" name="state" value="{{ mosque.state }}" required>
-                            </div>
+                            <label for="name" class="form-label">Mosque Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ mosque.name }}" required>
                         </div>
                         
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="country" class="form-label">
-                                    <i class="fas fa-globe"></i> Country
-                                </label>
-                                <input type="text" class="form-control" id="country" name="country" value="{{ mosque.country }}" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="phone" class="form-label">
-                                    <i class="fas fa-phone"></i> Phone Number
-                                </label>
-                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ mosque.phone or '' }}">
-                                <div class="form-text">Optional</div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="email" class="form-label">
-                                    <i class="fas fa-envelope"></i> Email Address
-                                </label>
-                                <input type="email" class="form-control" id="email" name="email" value="{{ mosque.email or '' }}">
-                                <div class="form-text">Optional</div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="capacity" class="form-label">
-                                    <i class="fas fa-users"></i> Capacity
-                                </label>
-                                <input type="number" class="form-control" id="capacity" name="capacity" min="1" value="{{ mosque.capacity or '' }}">
-                                <div class="form-text">Optional - Enter the maximum capacity of the mosque</div>
-                            </div>
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ mosque.phone }}">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ mosque.email }}">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="capacity" class="form-label">Capacity</label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" min="0" value="{{ mosque.capacity }}">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="state" class="form-label">State</label>
+                            <select class="form-select" id="state" name="state" required>
+                                <option value="" disabled>Select state</option>
+                                {% for state in ['Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan', 'Pahang', 'Perak', 'Perlis', 'Pulau Pinang', 'Sabah', 'Sarawak', 'Selangor', 'Terengganu', 'Kuala Lumpur', 'Labuan', 'Putrajaya'] %}
+                                <option value="{{ state }}" {% if mosque.state == state %}selected{% endif %}>{{ state }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city" value="{{ mosque.city }}" required>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required>{{ mosque.address }}</textarea>
                         </div>
                     </div>
                     
                     <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Save Changes
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Update Mosque
                         </button>
-                        <button type="button" onclick="goBack()" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </button>
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </a>
                     </div>
                 </form>
             </div>

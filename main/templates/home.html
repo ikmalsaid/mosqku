@@ -44,11 +44,17 @@
                     <i class="fas fa-mosque"></i> Register Your Mosque
                 </a>
             </div>
-        {% elif user.role == 'superadmin' %}
+        {% else %}
             <div class="hero-cta">
-                <a href="{{ url_for('admin.add_mosque') }}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-mosque"></i> Add New Mosque
+                {% if user.role == 'superadmin' %}
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-gauge-high"></i> Go to Admin Dashboard
                 </a>
+                {% else %}
+                <a href="{{ url_for('mosque.dashboard') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-tachometer-alt"></i> Go to Mosque Dashboard
+                </a>
+                {% endif %}
             </div>
         {% endif %}
     </div>

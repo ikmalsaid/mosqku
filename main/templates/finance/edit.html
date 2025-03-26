@@ -3,7 +3,12 @@
 {% block title %}Edit Transaction{% endblock %}
 
 {% block breadcrumbs %}
+{% if user.role == 'superadmin' %}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}" class="text-success">Admin Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" class="text-success">Mosque Details</a></li>
+{% else %}
 <li class="breadcrumb-item"><a href="{{ url_for('mosque.dashboard') }}" class="text-success">Mosque Dashboard</a></li>
+{% endif %}
 <li class="breadcrumb-item"><a href="{{ url_for('finance.finance_list', mosque_id=mosque.id) }}" class="text-success">Manage Finance</a></li>
 <li class="breadcrumb-item active">Edit Transaction</li>
 {% endblock %}
@@ -20,7 +25,10 @@
 
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card mt-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h4><i class="fas fa-money-bill-wave"></i> Transaction Details</h4>
+            </div>
             <div class="card-body">
                 <form method="POST">
                     <div class="row g-3">
@@ -61,8 +69,8 @@
                             <div class="input-group">
                                 <span class="input-group-text">RM</span>
                                 <input type="number" step="0.01" class="form-control" id="amount" name="amount" value="{{ item.amount }}" required>
-                                <div class="form-text text-muted">Use negative value for expenses (e.g., -100.00)</div>
                             </div>
+                            <div class="form-text text-muted">Use negative value for expenses (e.g., -100.00)</div>
                         </div>
                         
                         <div class="col-12">
@@ -74,15 +82,15 @@
                             <label for="remarks" class="form-label">Remarks</label>
                             <textarea class="form-control" id="remarks" name="remarks" rows="2">{{ item.remarks }}</textarea>
                         </div>
-                        
-                        <div class="col-12 mt-4">
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-save"></i> Save Changes
-                            </button>
-                            <button type="button" onclick="goBack()" class="btn btn-outline-secondary">
-                                <i class="fas fa-times"></i> Cancel
-                            </button>
-                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Update Transaction
+                        </button>
+                        <a href="{{ url_for('finance.finance_list', mosque_id=mosque.id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Finance List
+                        </a>
                     </div>
                 </form>
             </div>

@@ -3,7 +3,11 @@
 {% block title %}Mosque Details{% endblock %}
 
 {% block breadcrumbs %}
-<li class="breadcrumb-item"><a href="{{ url_for('mosque.home') }}" class="text-success">Home</a></li>
+{% if user.role == 'superadmin' %}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}" class="text-success">Admin Dashboard</a></li>
+{% else %}
+<li class="breadcrumb-item"><a href="{{ url_for('mosque.dashboard') }}" class="text-success">Mosque Dashboard</a></li>
+{% endif %}
 <li class="breadcrumb-item active">Mosque Details</li>
 {% endblock %}
 
@@ -43,7 +47,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="#">
+                        <a class="dropdown-item" href="{{ url_for('finance.finance_list', mosque_id=mosque.id) }}">
                             <i class="fas fa-money-bill-wave"></i> Manage Finance
                         </a>
                     </li>
@@ -135,7 +139,7 @@
             <div class="card-body">
                 {% if prayer_times %}
                 <div class="prayer-times-list">
-                    {% for prayer in prayer_times %}
+                    {% for prayer in prayer_times|sort(attribute='order') %}
                     <div class="prayer-time-item">
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="prayer-name">{{ prayer.prayer_name }}</span>
@@ -199,8 +203,8 @@
 </div>
 
 <div class="mt-4">
-    <button onclick="goBack()" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Back
-    </button>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
 </div>
 {% endblock %} 

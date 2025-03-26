@@ -56,7 +56,7 @@
                     </li>
                     {% if user.role == 'admin' %}
                     <li>
-                        <a class="dropdown-item" href="{{ url_for('admin.add_admin') }}">
+                        <a class="dropdown-item" href="{{ url_for('mosque.add_admin') }}">
                             <i class="fas fa-user-plus"></i> Add Another Admin
                         </a>
                     </li>
@@ -157,7 +157,7 @@
                 <div class="card-body">
                     {% if prayer_times %}
                         <div class="prayer-times-list">
-                            {% for prayer in prayer_times[:5] %}
+                            {% for prayer in prayer_times|sort(attribute='order') %}
                                 <div class="prayer-time-item">
                                     <div class="prayer-name">{{ prayer.prayer_name }}</div>
                                     <div class="prayer-time">{{ prayer.time.strftime('%I:%M %p') }}</div>

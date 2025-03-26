@@ -45,21 +45,29 @@ def register():
         elif len(password) < 8:
             flash('Password must be at least 8 characters.', category='error')
         else:
+            recovery_key = User.generate_recovery_key()
             new_user = User(
                 email=email,
                 name=name,
                 password=generate_password_hash(password, method='scrypt'),
-                role='user'
+                role='user',
+                recovery_key=recovery_key
             )
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
-            flash('Account created!', category='success')
+            flash(f'Account created! Your recovery key is: {recovery_key} - Please save this in a secure place.', category='success')
             return redirect(url_for('mosque.dashboard'))
             
     return render_template("auth/register.html", user=current_user)
 
-@auth.route('/change-password', methods=['GET', 'POST'])
+@auth.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('auth.login'))
+
+@auth.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
     if request.method == 'POST':
@@ -72,7 +80,7 @@ def change_password():
         elif not check_password_hash(current_user.password, current_password):
             flash('Current password is incorrect.', category='error')
         elif new_password != confirm_password:
-            flash('New passwords don\'t match.', category='error')
+            flash('Passwords don\'t match.', category='error')
         elif len(new_password) < 8:
             flash('Password must be at least 8 characters.', category='error')
         else:
@@ -83,8 +91,37 @@ def change_password():
             
     return render_template("auth/change_password.html", user=current_user)
 
-@auth.route('/logout')
+@auth.route('/view_recovery_key')
 @login_required
-def logout():
-    logout_user()
-    return redirect(url_for('auth.login')) 
+def view_recovery_key():
+    return render_template("auth/view_recovery_key.html", user=current_user)
+
+@auth.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        recovery_key = request.form.get('recovery_key')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        user = User.query.filter_by(email=email).first()
+        
+        if not email or not recovery_key or not new_password or not confirm_password:
+            flash('All fields are required.', category='error')
+        elif not user:
+            flash('Email not found.', category='error')
+        elif recovery_key != user.recovery_key:
+            flash('Invalid recovery key.', category='error')
+        elif new_password != confirm_password:
+            flash('Passwords don\'t match.', category='error')
+        elif len(new_password) < 8:
+            flash('Password must be at least 8 characters.', category='error')
+        else:
+            user.password = generate_password_hash(new_password, method='scrypt')
+            # Generate a new recovery key after password reset
+            user.recovery_key = User.generate_recovery_key()
+            db.session.commit()
+            flash('Password reset successfully! You can now login with your new password.', category='success')
+            return redirect(url_for('auth.login'))
+            
+    return render_template("auth/forgot_password.html", user=current_user) 

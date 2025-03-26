@@ -10,16 +10,21 @@ A modern web application for managing multiple mosques. Streamline mosque admini
   - Capacity and contact tracking
 - 🕒 **Prayer Time Management**
   - Schedule and update prayer times
-  - Daily prayer time display
+  - Daily prayer time display with proper ordering (Imsak, Subuh, Syuruk, Zuhur, Asar, Maghrib, Isyak)
   - Automatic scheduling
 - 📢 **Announcement System**
   - Create and manage announcements
   - Set announcement duration
   - Target specific audiences
 - 👥 **Role-based Access Control**
-  - Superadmin: Full system access
-  - Admin: Mosque-specific management
+  - Superadmin: Full system access and mosque management
+  - Admin: Mosque-specific management and ability to add co-administrators
   - User: View mosque information
+- 🔐 **Account Security**
+  - Recovery key system for password reset
+  - Secure password requirements
+  - View recovery key functionality
+  - Password reset with recovery key
 
 ## 🚀 Quick Start
 
@@ -66,11 +71,14 @@ For security reasons, please change the default superadmin password after your f
 - Manage all mosques in the system
 - Create and edit mosque administrators
 - Full system configuration access
+- Assign administrators to any mosque
 
 ### Admin
 - Manage assigned mosque details
 - Control prayer times and announcements
-- Create additional mosque administrators
+- Add co-administrators to their mosque
+- Manage mosque inventory and finance
+- View and manage mosque-specific administrators
 
 ### User
 - View mosque information
@@ -97,6 +105,8 @@ mosque-management-system/
 - Role-based access control
 - Form validation with CSRF protection
 - Secure session management
+- Recovery key system for password reset
+- Secure password requirements enforcement
 
 ## 🤝 Contributing
 

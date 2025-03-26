@@ -2,6 +2,11 @@
 
 {% block title %}Add Mosque{% endblock %}
 
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}" class="text-success">Admin Dashboard</a></li>
+<li class="breadcrumb-item active">Add Mosque</li>
+{% endblock %}
+
 {% block content %}
 <div class="dashboard-header">
     <div class="row align-items-center">
@@ -89,9 +94,9 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Add Mosque
                         </button>
-                        <button type="button" onclick="goBack()" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </button>
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </a>
                     </div>
                 </form>
             </div>

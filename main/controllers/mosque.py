@@ -6,6 +6,7 @@ from ..models.announcement import Announcement
 from ..models.user import User
 from .. import db
 from datetime import datetime, date
+from werkzeug.security import generate_password_hash
 
 mosque = Blueprint('mosque', __name__)
 
@@ -13,9 +14,9 @@ mosque = Blueprint('mosque', __name__)
 @mosque.route('/home')
 def home():
     mosques = Mosque.query.all()
-    return render_template("mosque/home.html", user=current_user, mosques=mosques)
+    return render_template("home.html", user=current_user, mosques=mosques)
 
-@mosque.route('/register-mosque', methods=['GET', 'POST'])
+@mosque.route('/register_mosque', methods=['GET', 'POST'])
 @login_required
 def register_mosque():
     if request.method == 'POST':
@@ -113,6 +114,8 @@ def prayer_times(mosque_id):
         flash('Unauthorized access.', category='error')
         return redirect(url_for('mosque.dashboard'))
         
+    mosque = Mosque.query.get_or_404(mosque_id)
+        
     if request.method == 'POST':
         prayer_name = request.form.get('prayer_name')
         time = request.form.get('time')
@@ -136,7 +139,7 @@ def prayer_times(mosque_id):
         "mosque/prayer_times.html",
         user=current_user,
         prayer_times=prayer_times,
-        mosque_id=mosque_id
+        mosque=mosque
     )
 
 @mosque.route('/prayer_times/delete/<int:id>', methods=['POST'])
@@ -251,4 +254,42 @@ def edit_announcement(id):
             flash('Error updating announcement.', 'error')
             return redirect(url_for('mosque.edit_announcement', id=id))
 
-    return render_template('mosque/edit_announcement.html', user=current_user, announcement=announcement) 
+    return render_template('mosque/edit_announcement.html', user=current_user, announcement=announcement)
+
+@mosque.route('/add_admin', methods=['GET', 'POST'])
+@login_required
+def add_admin():
+    # Only allow mosque admins to access this route
+    if current_user.role != 'admin':
+        flash('Unauthorized access.', category='error')
+        return redirect(url_for('mosque.dashboard'))
+        
+    mosque = Mosque.query.get_or_404(current_user.mosque_id)
+    
+    if request.method == 'POST':
+        email = request.form.get('email')
+        name = request.form.get('name')
+        password = request.form.get('password')
+        
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash('Email already exists.', category='error')
+        else:
+            try:
+                recovery_key = User.generate_recovery_key()
+                new_admin = User(
+                    email=email,
+                    name=name,
+                    password=generate_password_hash(password, method='scrypt'),
+                    role='admin',
+                    mosque_id=current_user.mosque_id,
+                    recovery_key=recovery_key
+                )
+                db.session.add(new_admin)
+                db.session.commit()
+                flash(f'Admin added successfully! Recovery key is: {recovery_key} - Please save this in a secure place.', category='success')
+                return redirect(url_for('mosque.dashboard'))
+            except Exception as e:
+                flash('Error adding admin.', category='error')
+                
+    return render_template("mosque/add_admin.html", user=current_user, mosque=mosque) 
