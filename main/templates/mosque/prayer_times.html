@@ -74,6 +74,18 @@
                 </form>
             </div>
         </div>
+        
+        <div class="mt-4">
+            {% if user.role == 'superadmin' %}
+            <a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Mosque Details
+            </a>
+            {% else %}
+            <a href="{{ url_for('mosque.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Prayer Times List -->
@@ -124,18 +136,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="mt-4">
-    {% if user.role == 'superadmin' %}
-    <a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Back to Mosque Details
-    </a>
-    {% else %}
-    <a href="{{ url_for('mosque.dashboard') }}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Back to Dashboard
-    </a>
-    {% endif %}
 </div>
 
 <script>
