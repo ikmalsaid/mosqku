@@ -25,10 +25,18 @@ A modern web application for managing multiple mosques. Streamline mosque admini
   - Secure password requirements
   - View recovery key functionality
   - Password reset with recovery key
+- 📦 **Inventory Management**
+  - Track mosque assets and equipment
+  - Manage maintenance schedules
+  - Record item conditions and locations
+- 💰 **Financial Management**
+  - Track donations and expenses
+  - Generate financial reports
+  - Manage mosque budgets
 
 ## 🚀 Quick Start
 
-### Installation
+### Local Development
 
 1. Clone and enter the repository:
 ```bash
@@ -62,8 +70,32 @@ python app.py
   ```
 - Or create a new account
 
-### ⚠️ Important Note
-For security reasons, please change the default superadmin password after your first login.
+### Vercel Deployment
+
+1. Install Vercel CLI:
+```bash
+npm i -g vercel
+```
+
+2. Login to Vercel:
+```bash
+vercel login
+```
+
+3. Deploy:
+```bash
+vercel
+```
+
+4. For production deployment:
+```bash
+vercel --prod
+```
+
+### ⚠️ Important Notes
+- For security reasons, please change the default superadmin password after your first login
+- When deploying to Vercel, make sure to set up your environment variables in the Vercel dashboard
+- The SQLite database will be recreated on each deployment, consider using a persistent database service for production
 
 ## 👥 User Roles & Capabilities
 
@@ -72,6 +104,7 @@ For security reasons, please change the default superadmin password after your f
 - Create and edit mosque administrators
 - Full system configuration access
 - Assign administrators to any mosque
+- Access to system-wide analytics
 
 ### Admin
 - Manage assigned mosque details
@@ -84,19 +117,24 @@ For security reasons, please change the default superadmin password after your f
 - View mosque information
 - Access prayer times
 - Read announcements
+- View mosque inventory status
+- Access public financial reports
 
 ## 🏗️ Project Structure
 ```
 mosque-management-system/
-├── app/
-│   ├── __init__.py
+├── api/
+│   └── index.py         # Vercel entry point
+├── main/
+│   ├── __init__.py      # Application factory
 │   ├── models/          # Database models
 │   ├── controllers/     # Route handlers
 │   ├── templates/       # HTML templates
-│   └── static/         # Assets (CSS, JS)
-├── instance/           # Database instance
-├── requirements.txt    # Dependencies
-└── run.py             # Application entry
+│   └── static/          # Assets (CSS, JS)
+├── instance/            # Database instance
+├── requirements.txt     # Dependencies
+├── vercel.json         # Vercel configuration
+└── app.py              # Local development entry
 ```
 
 ## 🔒 Security Features
@@ -107,6 +145,8 @@ mosque-management-system/
 - Secure session management
 - Recovery key system for password reset
 - Secure password requirements enforcement
+- Rate limiting on sensitive endpoints
+- XSS protection
 
 ## 📄 License
 
