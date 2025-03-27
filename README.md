@@ -101,11 +101,11 @@ python app.py
 ```
 mosqku/
 ├── main/
-│   ├── __init__.py      # Application factory
+│   ├── static/          # Assets (CSS, JS)
 │   ├── models/          # Database models
 │   ├── controllers/     # Route handlers
 │   ├── templates/       # HTML templates
-│   └── static/          # Assets (CSS, JS)
+│   └── __init__.py      # Main server file
 ├── instance/            # Database instance
 ├── requirements.txt     # Dependencies
 └── app.py               # Application file
