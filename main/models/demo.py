@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta, time
 import random
 from werkzeug.security import generate_password_hash
-from .models.user import User
-from .models.mosque import Mosque
-from .models.prayer_time import PrayerTime
-from .models.inventory import Inventory
-from .models.finance import Finance
-from .models.announcement import Announcement
-from . import db
+from .user import User
+from .mosque import Mosque
+from .prayer_time import PrayerTime
+from .inventory import Inventory
+from .finance import Finance
+from .announcement import Announcement
+from .. import db
 
 def generate_mosque_data(mosque_info):
     """Generate data for a specific mosque"""

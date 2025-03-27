@@ -2,7 +2,6 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from os import path
-import sqlite3
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
@@ -127,7 +126,7 @@ def create_database(app, demo=False):
             
             # Generate demo data if requested
             if demo:
-                from .demo import generate_demo_data
+                from .models.demo import generate_demo_data
                 generate_demo_data()
             
             print(f'Created database: {path.join(app.instance_path, DB_NAME)}')
