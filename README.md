@@ -1,6 +1,6 @@
 # Mosqku - Mosque Management System
 
-A modern web application for managing multiple mosques (#GodamSahur 2025),
+A modern web application for managing multiple mosques (#GodamSahur 2025)
 
 ## ✨ Key Features
 
