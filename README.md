@@ -81,7 +81,6 @@ python app.py
 - Create and edit mosque administrators
 - Full system configuration access
 - Assign administrators to any mosque
-- Access to system-wide analytics
 
 ### Admin
 - Manage assigned mosque details
