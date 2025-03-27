@@ -1,6 +1,6 @@
 # Mosqku - Mosque Management System
 
-A modern web application for managing multiple mosques. Streamline mosque administration with prayer time management, announcements and role-based access control.
+A modern web application for managing multiple mosques (#GodamSahur 2025),
 
 ## ✨ Key Features
 
@@ -70,31 +70,8 @@ python app.py
   ```
 - Or create a new account
 
-### Vercel Deployment
-
-1. Install Vercel CLI:
-```bash
-npm i -g vercel
-```
-
-2. Login to Vercel:
-```bash
-vercel login
-```
-
-3. Deploy:
-```bash
-vercel
-```
-
-4. For production deployment:
-```bash
-vercel --prod
-```
-
 ### ⚠️ Important Notes
 - For security reasons, please change the default superadmin password after your first login
-- When deploying to Vercel, make sure to set up your environment variables in the Vercel dashboard
 - The SQLite database will be recreated on each deployment, consider using a persistent database service for production
 
 ## 👥 User Roles & Capabilities
@@ -122,9 +99,7 @@ vercel --prod
 
 ## 🏗️ Project Structure
 ```
-mosque-management-system/
-├── api/
-│   └── index.py         # Vercel entry point
+mosqku/
 ├── main/
 │   ├── __init__.py      # Application factory
 │   ├── models/          # Database models
@@ -133,20 +108,17 @@ mosque-management-system/
 │   └── static/          # Assets (CSS, JS)
 ├── instance/            # Database instance
 ├── requirements.txt     # Dependencies
-├── vercel.json         # Vercel configuration
-└── app.py              # Local development entry
+└── app.py               # Application file
 ```
 
 ## 🔒 Security Features
 
-- SHA-256 password hashing
+- Scrypt password hashing
 - Role-based access control
 - Form validation with CSRF protection
 - Secure session management
 - Recovery key system for password reset
 - Secure password requirements enforcement
-- Rate limiting on sensitive endpoints
-- XSS protection
 
 ## 📄 License
 
