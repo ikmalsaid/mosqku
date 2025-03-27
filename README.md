@@ -2,6 +2,8 @@
 
 A modern web application for managing multiple mosques (#GodamSahur 2025)
 
+![Mosqku Homepage](assets/thumb.webp)
+
 ## ✨ Key Features
 
 - 🕌 **Multi-mosque Support**
@@ -10,7 +12,7 @@ A modern web application for managing multiple mosques (#GodamSahur 2025)
   - Capacity and contact tracking
 - 🕒 **Prayer Time Management**
   - Schedule and update prayer times
-  - Daily prayer time display with proper ordering (Imsak, Subuh, Syuruk, Zuhur, Asar, Maghrib, Isyak)
+  - Daily prayer time display
   - Automatic scheduling
 - 📢 **Announcement System**
   - Create and manage announcements
