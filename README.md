@@ -108,13 +108,6 @@ mosque-management-system/
 - Recovery key system for password reset
 - Secure password requirements enforcement
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
 ## 📄 License
 
 See [LICENSE](LICENSE) for details.

@@ -85,16 +85,19 @@ def dashboard():
             prayer_times=prayer_times,
             active_announcements=active_announcements,
             assigned_admins=assigned_admins,
-            now=date.today()
+            now=datetime.now()
         )
     return render_template("mosque/dashboard.html", user=current_user)
 
-@mosque.route('/mosque/<int:id>')
+@mosque.route('/admin/mosque_details/<int:id>')
 def mosque_details(id):
     mosque = Mosque.query.get_or_404(id)
     all_announcements = Announcement.query.filter_by(mosque_id=id).all()
     active_announcements = [a for a in all_announcements if a.is_active]
-    prayer_times = PrayerTime.query.filter_by(mosque_id=id).all()
+    prayer_times = PrayerTime.query.filter_by(
+        mosque_id=id,
+        date=date.today()
+    ).all()
     
     # Get assigned admins if user is superadmin or an admin of this mosque
     assigned_admins = []
@@ -107,7 +110,8 @@ def mosque_details(id):
         mosque=mosque,
         announcements=active_announcements,
         prayer_times=prayer_times,
-        assigned_admins=assigned_admins
+        assigned_admins=assigned_admins,
+        now=datetime.now()
     )
 
 @mosque.route('/prayer_times/<int:mosque_id>', methods=['GET', 'POST'])
@@ -238,9 +242,19 @@ def import_prayer_times(mosque_id):
 @mosque.route('/announcements', methods=['GET', 'POST'])
 @login_required
 def announcements():
-    if not current_user.mosque_id:
+    # If user is not a superadmin and has no mosque, redirect to register
+    if not current_user.role == 'superadmin' and not current_user.mosque_id:
         flash('Please register a mosque first.', 'warning')
         return redirect(url_for('mosque.register_mosque'))
+
+    # For superadmin, get mosque_id from query parameter
+    if current_user.role == 'superadmin':
+        mosque_id = request.args.get('mosque_id', type=int)
+        if not mosque_id:
+            flash('Please specify a mosque.', 'warning')
+            return redirect(url_for('admin.dashboard'))
+    else:
+        mosque_id = current_user.mosque_id
 
     if request.method == 'POST':
         title = request.form.get('title')
@@ -249,27 +263,36 @@ def announcements():
         end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d').date()
         start_time = datetime.strptime(request.form.get('start_time'), '%H:%M').time()
         end_time = datetime.strptime(request.form.get('end_time'), '%H:%M').time()
+        is_urgent = request.form.get('is_urgent') == 'on'
 
         if start_date > end_date or (start_date == end_date and start_time >= end_time):
             flash('End date/time must be after start date/time.', 'error')
-            return redirect(url_for('mosque.announcements'))
+            return redirect(url_for('mosque.announcements', mosque_id=mosque_id))
 
         announcement = Announcement(
-            mosque_id=current_user.mosque_id,
+            mosque_id=mosque_id,
             title=title,
             content=content,
             start_date=start_date,
             end_date=end_date,
             start_time=start_time,
-            end_time=end_time
+            end_time=end_time,
+            is_urgent=is_urgent
         )
         db.session.add(announcement)
         db.session.commit()
         flash('Announcement added successfully.', 'success')
+        if current_user.role == 'superadmin':
+            return redirect(url_for('admin.mosque_announcements', mosque_id=mosque_id))
         return redirect(url_for('mosque.announcements'))
 
-    announcements = Announcement.query.filter_by(mosque_id=current_user.mosque_id).all()
-    return render_template('mosque/announcements.html', announcements=announcements, user=current_user)
+    announcements = Announcement.query.filter_by(mosque_id=mosque_id).all()
+    mosque = Mosque.query.get_or_404(mosque_id)
+    return render_template('mosque/announcements.html', 
+                         announcements=announcements, 
+                         user=current_user, 
+                         mosque=mosque,
+                         now=datetime.now())
 
 @mosque.route('/announcements/delete/<int:id>', methods=['POST'])
 @login_required
@@ -308,6 +331,7 @@ def edit_announcement(id):
         end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d').date()
         start_time = datetime.strptime(request.form.get('start_time'), '%H:%M').time()
         end_time = datetime.strptime(request.form.get('end_time'), '%H:%M').time()
+        is_urgent = request.form.get('is_urgent') == 'on'
 
         if start_date > end_date or (start_date == end_date and start_time >= end_time):
             flash('End date/time must be after start date/time.', 'error')
@@ -320,14 +344,21 @@ def edit_announcement(id):
             announcement.end_date = end_date
             announcement.start_time = start_time
             announcement.end_time = end_time
+            announcement.is_urgent = is_urgent
             db.session.commit()
             flash('Announcement updated successfully.', 'success')
+            if current_user.role == 'superadmin':
+                return redirect(url_for('admin.mosque_announcements', mosque_id=announcement.mosque_id))
             return redirect(url_for('mosque.announcements'))
         except Exception as e:
             flash('Error updating announcement.', 'error')
             return redirect(url_for('mosque.edit_announcement', id=id))
 
-    return render_template('mosque/edit_announcement.html', user=current_user, announcement=announcement)
+    return render_template('mosque/edit_announcement.html', 
+                         user=current_user, 
+                         announcement=announcement, 
+                         mosque=Mosque.query.get(announcement.mosque_id),
+                         now=datetime.now())
 
 @mosque.route('/add_admin', methods=['GET', 'POST'])
 @login_required

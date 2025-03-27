@@ -71,8 +71,19 @@
                         </div>
                     </div>
                     
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="is_urgent" name="is_urgent" 
+                                   style="border-color: #198754; background-color: {% if announcement.is_urgent %}#198754{% else %}transparent{% endif %};"
+                                   {% if announcement.is_urgent %}checked{% endif %}>
+                            <label class="form-check-label" for="is_urgent">
+                                <i class="fas fa-exclamation-circle text-success"></i> Mark as Urgent
+                            </label>
+                        </div>
+                    </div>
+                    
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-success">
                             <i class="fas fa-save"></i> Update Announcement
                         </button>
                         <a href="{{ url_for('mosque.announcements') }}" class="btn btn-outline-secondary">

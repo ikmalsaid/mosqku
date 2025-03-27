@@ -11,11 +11,12 @@ class Announcement(db.Model):
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
     mosque_id = db.Column(db.Integer, db.ForeignKey('mosque.id'), nullable=False)
+    is_urgent = db.Column(db.Boolean, nullable=False, default=False)
     
     def __repr__(self):
         return f'<Announcement {self.title}>'
 
-    def __init__(self, id=None, mosque_id=None, title=None, content=None, start_date=None, end_date=None, start_time=None, end_time=None):
+    def __init__(self, id=None, mosque_id=None, title=None, content=None, start_date=None, end_date=None, start_time=None, end_time=None, is_urgent=False):
         self.id = id
         self.mosque_id = mosque_id
         self.title = title
@@ -24,6 +25,7 @@ class Announcement(db.Model):
         self.end_date = end_date
         self.start_time = start_time
         self.end_time = end_time
+        self.is_urgent = is_urgent
 
     @staticmethod
     def create_table():
@@ -37,6 +39,7 @@ class Announcement(db.Model):
                 end_date DATE NOT NULL,
                 start_time TIME NOT NULL,
                 end_time TIME NOT NULL,
+                is_urgent BOOLEAN NOT NULL DEFAULT 0,
                 FOREIGN KEY (mosque_id) REFERENCES mosques (id)
             )
         ''')
@@ -56,22 +59,23 @@ class Announcement(db.Model):
             start_date=datetime.strptime(row[4], '%Y-%m-%d').date(),
             end_date=datetime.strptime(row[5], '%Y-%m-%d').date(),
             start_time=datetime.strptime(row[6], '%H:%M').time(),
-            end_time=datetime.strptime(row[7], '%H:%M').time()
+            end_time=datetime.strptime(row[7], '%H:%M').time(),
+            is_urgent=bool(row[8])
         ) for row in announcements]
 
     def save(self):
         if self.id is None:
             db.execute(
-                '''INSERT INTO announcements (mosque_id, title, content, start_date, end_date, start_time, end_time)
-                VALUES (?, ?, ?, ?, ?, ?, ?)''',
-                (self.mosque_id, self.title, self.content, self.start_date, self.end_date, self.start_time, self.end_time)
+                '''INSERT INTO announcements (mosque_id, title, content, start_date, end_date, start_time, end_time, is_urgent)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+                (self.mosque_id, self.title, self.content, self.start_date, self.end_date, self.start_time, self.end_time, self.is_urgent)
             )
         else:
             db.execute(
                 '''UPDATE announcements
-                SET title = ?, content = ?, start_date = ?, end_date = ?, start_time = ?, end_time = ?
+                SET title = ?, content = ?, start_date = ?, end_date = ?, start_time = ?, end_time = ?, is_urgent = ?
                 WHERE id = ? AND mosque_id = ?''',
-                (self.title, self.content, self.start_date, self.end_date, self.start_time, self.end_time, self.id, self.mosque_id)
+                (self.title, self.content, self.start_date, self.end_date, self.start_time, self.end_time, self.is_urgent, self.id, self.mosque_id)
             )
         db.commit()
 

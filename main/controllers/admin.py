@@ -152,6 +152,7 @@ def mosque_announcements(mosque_id):
         end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d').date()
         start_time = datetime.strptime(request.form.get('start_time'), '%H:%M').time()
         end_time = datetime.strptime(request.form.get('end_time'), '%H:%M').time()
+        is_urgent = request.form.get('is_urgent') == 'on'
 
         if start_date > end_date or (start_date == end_date and start_time >= end_time):
             flash('End date/time must be after start date/time.', 'error')
@@ -164,7 +165,8 @@ def mosque_announcements(mosque_id):
             start_date=start_date,
             end_date=end_date,
             start_time=start_time,
-            end_time=end_time
+            end_time=end_time,
+            is_urgent=is_urgent
         )
         db.session.add(announcement)
         db.session.commit()
@@ -172,7 +174,11 @@ def mosque_announcements(mosque_id):
         return redirect(url_for('admin.mosque_announcements', mosque_id=mosque_id))
 
     announcements = Announcement.query.filter_by(mosque_id=mosque_id).all()
-    return render_template('mosque/announcements.html', announcements=announcements, user=current_user, mosque=mosque)
+    return render_template('mosque/announcements.html', 
+                         announcements=announcements, 
+                         user=current_user, 
+                         mosque=mosque, 
+                         now=datetime.now())
 
 @admin.route('/mosque/announcements/delete/<int:id>', methods=['POST'])
 @login_required

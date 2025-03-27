@@ -10,27 +10,19 @@
 <div class="dashboard-header mb-4">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
         <div>
-            <h2 class="mb-1"><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
-            <p class="text-muted mb-md-0">
-                {% if user.role == 'superadmin' %}
-                Super Administrator Control Panel
-                {% else %}
-                Mosque Administrator Control Panel
-                {% endif %}
-            </p>
+            <h2 class="mb-1"><i class="fas fa-user-shield text-success"></i> Admin Dashboard</h2>
+            <p class="text-muted mb-md-0">Super Administrator Control Panel</p>
         </div>
         <div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle w-md-auto" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-success dropdown-toggle w-md-auto" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-cog"></i> Quick Actions
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown">
-                {% if user.role == 'superadmin' %}
                 <li>
                     <a class="dropdown-item" href="{{ url_for('admin.add_mosque') }}">
                         <i class="fas fa-mosque"></i> Add New Mosque
                     </a>
                 </li>
-                {% endif %}
                 <li>
                     <a class="dropdown-item" href="{{ url_for('admin.add_admin') }}">
                         <i class="fas fa-user-plus"></i> Add New Admin
@@ -44,64 +36,74 @@
 <div class="row g-4">
     <!-- Mosques Card -->
     <div class="col-md-6">
-        <div class="card dashboard-card">
-            <div class="card-header">
-                <h4><i class="fas fa-mosque"></i> Mosques ({{ mosques|length }})</h4>
+        <div class="card dashboard-card border-success border-opacity-25">
+            <div class="card-header bg-success bg-opacity-10">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-mosque text-success"></i> Mosques</h4>
+                    <span class="badge bg-success">{{ mosques|length }}</span>
+                </div>
             </div>
             <div class="card-body">
                 {% if mosques %}
                 <div class="mosque-list">
                     {% for mosque in mosques %}
-                    <div class="mosque-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="mosque-name mb-1">{{ mosque.name }}</h5>
-                                <p class="text-muted mb-2">
-                                    <i class="fas fa-map-marker-alt"></i> {{ mosque.city }}, {{ mosque.state }}
-                                </p>
-                                {% if mosque.phone %}
-                                <p class="text-muted mb-1 small">
-                                    <i class="fas fa-phone"></i> {{ mosque.phone }}
-                                </p>
-                                {% endif %}
-                                {% if mosque.email %}
-                                <p class="text-muted mb-1 small">
-                                    <i class="fas fa-envelope"></i> {{ mosque.email }}
-                                </p>
-                                {% endif %}
+                    <div class="mosque-item p-3 border-bottom">
+                        <div class="row">
+                            <div class="col-12 col-md-8 mb-3 mb-md-0">
+                                <h5 class="mosque-name mb-2 text-success">{{ mosque.name }}</h5>
+                                <div class="mosque-details">
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-map-marker-alt"></i> {{ mosque.city }}, {{ mosque.state }}
+                                    </p>
+                                    {% if mosque.phone %}
+                                    <p class="text-muted mb-1 small">
+                                        <i class="fas fa-phone"></i> {{ mosque.phone }}
+                                    </p>
+                                    {% endif %}
+                                    {% if mosque.email %}
+                                    <p class="text-muted mb-1 small">
+                                        <i class="fas fa-envelope"></i> {{ mosque.email }}
+                                    </p>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div class="mosque-actions">
-                                <a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" class="btn btn-outline-primary btn-sm mb-2 w-100">
-                                    <i class="fas fa-eye"></i> View
-                                </a>
-                                {% if user.role == 'superadmin' %}
-                                <div class="btn-group w-100">
-                                    <a href="{{ url_for('admin.edit_mosque', id=mosque.id) }}" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-edit"></i> Edit
+                            <div class="col-12 col-md-4">
+                                <div class="d-flex gap-2 justify-content-start justify-content-md-end">
+                                    <a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" 
+                                       class="btn btn-outline-success btn-sm" 
+                                       title="View Details">
+                                        <i class="fas fa-eye"></i>
                                     </a>
-                                    <form action="{{ url_for('admin.delete_mosque', mosque_id=mosque.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this mosque? This will remove all prayer times, announcements, and unassign all administrators.');">
-                                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                                    <a href="{{ url_for('admin.edit_mosque', id=mosque.id) }}" 
+                                       class="btn btn-outline-success btn-sm" 
+                                       title="Edit Mosque">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ url_for('admin.delete_mosque', mosque_id=mosque.id) }}" 
+                                          method="POST" 
+                                          class="d-inline" 
+                                          onsubmit="return confirm('Are you sure you want to delete this mosque? This will remove all prayer times, announcements, and unassign all administrators.');">
+                                        <button type="submit" 
+                                                class="btn btn-outline-danger btn-sm" 
+                                                title="Delete Mosque">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
                                 </div>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="empty-indicator text-center">
-                    <i class="fas fa-mosque fa-2x mb-3 text-muted"></i>
+                <div class="empty-indicator text-center py-4">
+                    <i class="fas fa-mosque fa-2x mb-3 text-success"></i>
                     <p class="text-muted">No mosques available.</p>
-                    {% if user.role == 'superadmin' %}
                     <div class="mt-3">
-                        <a href="{{ url_for('admin.add_mosque') }}" class="btn btn-primary">
+                        <a href="{{ url_for('admin.add_mosque') }}" class="btn btn-success">
                             <i class="fas fa-plus me-1"></i> Add Mosque
                         </a>
                     </div>
-                    {% endif %}
                 </div>
                 {% endif %}
             </div>
@@ -110,58 +112,60 @@
 
     <!-- Admins Card -->
     <div class="col-md-6">
-        <div class="card dashboard-card">
-            <div class="card-header">
-                <h4><i class="fas fa-users-cog"></i> Admins ({{ admins|length }})</h4>
+        <div class="card dashboard-card border-success border-opacity-25">
+            <div class="card-header bg-success bg-opacity-10">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-users-cog text-success"></i> Administrators</h4>
+                    <span class="badge bg-success">{{ admins|length }}</span>
+                </div>
             </div>
             <div class="card-body">
                 {% if admins %}
                 <div class="admin-list">
                     {% for admin in admins %}
-                    <div class="admin-item position-relative" style="z-index: {{ 1000 - loop.index }}">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="admin-name mb-1">{{ admin.name }}</h5>
-                                <p class="text-muted mb-1">
-                                    <i class="fas fa-envelope"></i> {{ admin.email }}
-                                </p>
-                                <p class="text-muted mb-0 small">
-                                    <i class="fas fa-mosque"></i> 
-                                    {% if admin.mosque_id %}
-                                    {{ mosque_dict[admin.mosque_id] }}
-                                    {% else %}
-                                    No assigned mosque
-                                    {% endif %}
-                                </p>
-                            </div>
-                            <div class="d-flex flex-column align-items-end">
-                                <span class="badge bg-primary mb-2">{{ admin.role }}</span>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-cog"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <a class="dropdown-item" href="{{ url_for('admin.reset_admin_password', admin_id=admin.id) }}">
-                                                <i class="fas fa-key"></i> Reset Password
-                                            </a>
-                                        </li>
-                                        {% if user.role == 'superadmin' %}
-                                        <li>
-                                            <a class="dropdown-item" href="{{ url_for('admin.reassign_mosque', admin_id=admin.id) }}">
-                                                <i class="fas fa-exchange-alt"></i> Reassign Mosque
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <form action="{{ url_for('admin.delete_admin', admin_id=admin.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this administrator?');">
-                                                <button type="submit" class="dropdown-item text-danger">
-                                                    <i class="fas fa-trash"></i> Delete Account
-                                                </button>
-                                            </form>
-                                        </li>
+                    <div class="admin-item p-3 border-bottom">
+                        <div class="row">
+                            <div class="col-12 col-md-8 mb-3 mb-md-0">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <h5 class="admin-name mb-0 text-success">{{ admin.name }}</h5>
+                                    <span class="badge bg-success">{{ admin.role }}</span>
+                                </div>
+                                <div class="admin-details">
+                                    <p class="text-muted mb-1">
+                                        <i class="fas fa-envelope"></i> {{ admin.email }}
+                                    </p>
+                                    <p class="text-muted mb-0 small">
+                                        <i class="fas fa-mosque"></i> 
+                                        {% if admin.mosque_id %}
+                                        {{ mosque_dict[admin.mosque_id] }}
+                                        {% else %}
+                                        No assigned mosque
                                         {% endif %}
-                                    </ul>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="d-flex gap-2 justify-content-start justify-content-md-end">
+                                    <a href="{{ url_for('admin.reset_admin_password', admin_id=admin.id) }}" 
+                                       class="btn btn-outline-success btn-sm" 
+                                       title="Reset Password">
+                                        <i class="fas fa-key"></i>
+                                    </a>
+                                    <a href="{{ url_for('admin.reassign_mosque', admin_id=admin.id) }}" 
+                                       class="btn btn-outline-success btn-sm" 
+                                       title="Reassign Mosque">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </a>
+                                    <form action="{{ url_for('admin.delete_admin', admin_id=admin.id) }}" 
+                                          method="POST" 
+                                          class="d-inline" 
+                                          onsubmit="return confirm('Are you sure you want to delete this administrator?');">
+                                        <button type="submit" 
+                                                class="btn btn-outline-danger btn-sm" 
+                                                title="Delete Administrator">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -169,11 +173,11 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="empty-indicator text-center">
-                    <i class="fas fa-users-cog fa-2x mb-3 text-muted"></i>
+                <div class="empty-indicator text-center py-4">
+                    <i class="fas fa-users-cog fa-2x mb-3 text-success"></i>
                     <p class="text-muted">No administrators available.</p>
                     <div class="mt-3">
-                        <a href="{{ url_for('admin.add_admin') }}" class="btn btn-primary">
+                        <a href="{{ url_for('admin.add_admin') }}" class="btn btn-success">
                             <i class="fas fa-plus me-1"></i> Add Administrator
                         </a>
                     </div>

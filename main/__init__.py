@@ -1,6 +1,6 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from os import path
 import sqlite3
 
@@ -8,10 +8,15 @@ import sqlite3
 db = SQLAlchemy()
 DB_NAME = "mosque.db"
 
-def create_app():
+def create_app(demo=False, err_handler=False):
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'your-secret-key-here'  # Change this in production
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+
+    if err_handler:
+        app.config['DEBUG'] = False
+        app.config['PROPAGATE_EXCEPTIONS'] = False
+        app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
     
     db.init_app(app)
 
@@ -43,12 +48,60 @@ def create_app():
     def load_user(id):
         return User.query.get(int(id))
 
-    # Create database
-    create_database(app)
+    if err_handler:
+        @app.errorhandler(404)
+        def page_not_found(e):
+            return render_template('errors/error.html',
+                                error_code=404,
+                                error_title="Page Not Found",
+                                error_description="The page you're looking for doesn't exist.",
+                                user=current_user,
+                                hide_breadcrumbs=True), 404
+
+        @app.errorhandler(403)
+        def forbidden(e):
+            return render_template('errors/error.html',
+                                error_code=403,
+                                error_title="Access Forbidden",
+                                error_description="You don't have permission to access this resource.",
+                                user=current_user,
+                                hide_breadcrumbs=True), 403
+
+        @app.errorhandler(500)
+        def internal_server_error(e):
+            return render_template('errors/error.html',
+                                error_code=500,
+                                error_title="Internal Server Error",
+                                error_description="Something went wrong on our end. Please try again later.",
+                                user=current_user,
+                                hide_breadcrumbs=True), 500
+
+        @app.errorhandler(401)
+        def unauthorized(e):
+            return render_template('errors/error.html',
+                                error_code=401,
+                                error_title="Unauthorized Access",
+                                error_description="Please log in to access this page.",
+                                user=current_user,
+                                hide_breadcrumbs=True), 401
+
+        # Handle all other exceptions
+        @app.errorhandler(Exception)
+        def handle_exception(e):
+            # Log the error here if you want
+            return render_template('errors/error.html',
+                                error_code=500,
+                                error_title="Internal Server Error",
+                                error_description="Something went wrong on our end. Please try again later.",
+                                user=current_user,
+                                hide_breadcrumbs=True), 500
+
+    # Create database and optionally add demo data
+    create_database(app, demo)
     
     return app
 
-def create_database(app):
+def create_database(app, demo=False):
     if not path.exists('instance/' + DB_NAME):
         with app.app_context():
             db.create_all()
@@ -71,5 +124,10 @@ def create_database(app):
                 db.session.commit()
                 print(f'Created superadmin account: {default_admin.email}')
                 print(f'Default superadmin recovery key: {recovery_key}')
+            
+            # Generate demo data if requested
+            if demo:
+                from .demo import generate_demo_data
+                generate_demo_data()
             
             print(f'Created database: {path.join(app.instance_path, DB_NAME)}')

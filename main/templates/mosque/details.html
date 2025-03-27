@@ -61,9 +61,11 @@
 <div class="row g-4">
     <!-- Mosque Information -->
     <div class="col-md-4">
-        <div class="card dashboard-card">
-            <div class="card-header">
-                <h4><i class="fas fa-info-circle"></i> Mosque Information</h4>
+        <div class="card dashboard-card border-success border-opacity-25">
+            <div class="card-header bg-success bg-opacity-10">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-info-circle text-success"></i> Mosque Information</h4>
+                </div>
             </div>
             <div class="card-body">
                 <div class="mosque-info-list">
@@ -128,31 +130,44 @@
                 </div>
             </div>
         </div>
+        <div class="mt-3">
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
     </div>
 
-    <!-- Prayer Times -->
+    <!-- Prayer Times Card -->
     <div class="col-md-4">
-        <div class="card dashboard-card">
-            <div class="card-header">
-                <h4><i class="fas fa-clock"></i> Today's Prayer Times</h4>
+        <div class="card dashboard-card border-success border-opacity-25">
+            <div class="card-header bg-success bg-opacity-10">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-clock text-success"></i> Prayer Times</h4>
+                    <span class="badge bg-success">{{ prayer_times|length }}</span>
+                </div>
             </div>
             <div class="card-body">
                 {% if prayer_times %}
-                <div class="prayer-times-list">
-                    {% for prayer in prayer_times|sort(attribute='order') %}
-                    <div class="prayer-time-item">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="prayer-name">{{ prayer.prayer_name }}</span>
-                            <span class="prayer-time">{{ prayer.time.strftime('%I:%M %p') }}</span>
+                    <div class="prayer-times-list">
+                        {% for prayer in prayer_times|sort(attribute='order') %}
+                            <div class="prayer-time-item">
+                                <div class="prayer-name">{{ prayer.prayer_name }}</div>
+                                <div class="prayer-time">{{ prayer.time.strftime('%I:%M %p') }}</div>
+                            </div>
+                        {% endfor %}
+                        {% if prayer_times|length > 5 %}
+                        <div class="text-end mt-3">
+                            <a href="{{ url_for('mosque.prayer_times', mosque_id=mosque.id) }}" class="text-success text-decoration-none">
+                                View Prayer Times Schedule <i class="fas fa-chevron-right"></i>
+                            </a>
                         </div>
+                        {% endif %}
                     </div>
-                    {% endfor %}
-                </div>
                 {% else %}
-                <div class="empty-indicator">
-                    <i class="fas fa-clock fa-2x mb-3"></i>
-                    <p>No prayer times scheduled for today</p>
-                </div>
+                    <div class="empty-indicator">
+                        <i class="fas fa-calendar-day fa-2x"></i>
+                        <p>No prayer times scheduled for today</p>
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -160,51 +175,84 @@
 
     <!-- Announcements -->
     <div class="col-md-4">
-        <div class="card dashboard-card">
-            <div class="card-header">
-                <h4><i class="fas fa-bullhorn"></i> Current Announcements</h4>
+        <div class="card dashboard-card border-success border-opacity-25">
+            <div class="card-header bg-success bg-opacity-10">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-bullhorn text-success"></i> Active Announcements</h4>
+                    <span class="badge bg-success">{{ announcements|length }}</span>
+                </div>
             </div>
             <div class="card-body">
                 {% if announcements %}
-                <div class="announcement-list">
-                    {% for announcement in announcements %}
-                    <div class="announcement-item">
-                        <h5 class="announcement-title mb-1">{{ announcement.title }}</h5>
-                        <p class="announcement-content mb-2">{{ announcement.content }}</p>
-                        <p class="text-muted small mb-0">
-                            <i class="fas fa-calendar"></i> 
-                            {{ announcement.start_date.strftime('%d %b %Y') }} {{ announcement.start_time.strftime('%I:%M %p') }} - 
-                            {{ announcement.end_date.strftime('%d %b %Y') }} {{ announcement.end_time.strftime('%I:%M %p') }}
-                            <br>
-                            <i class="fas fa-clock"></i>
-                            {% if announcement.start_date == announcement.end_date %}
-                                Today until {{ announcement.end_time.strftime('%I:%M %p') }}
-                            {% else %}
-                                {% set days_left = (announcement.end_date - announcement.start_date).days %}
-                                {% if days_left > 0 %}
-                                    {{ days_left }} day(s) remaining
-                                {% else %}
-                                    Ends today at {{ announcement.end_time.strftime('%I:%M %p') }}
-                                {% endif %}
-                            {% endif %}
-                        </p>
-                    </div>
+                <div class="announcements-list">
+                    {# First show non-expired announcements #}
+                    {% for announcement in announcements|sort(attribute='end_time', reverse=true)|sort(attribute='end_date', reverse=true)|sort(attribute='is_urgent', reverse=true) %}
+                        {% set is_expired = announcement.end_date < now.date() or (announcement.end_date == now.date() and announcement.end_time < now.time()) %}
+                        {% if not is_expired %}
+                        <div class="announcement-item mb-2">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="announcement-title mb-1">
+                                        {% if announcement.is_urgent %}
+                                        <i class="fas fa-exclamation-circle text-danger" title="Urgent Announcement"></i>
+                                        {% endif %}
+                                        {{ announcement.title }}
+                                    </h5>
+                                    <p class="announcement-content mb-2">{{ announcement.content }}</p>
+                                    <p class="text-muted small mb-0">
+                                        <i class="fas fa-calendar"></i> 
+                                        {{ announcement.start_date.strftime('%d %b %Y') }} {{ announcement.start_time.strftime('%I:%M %p') }} - 
+                                        {{ announcement.end_date.strftime('%d %b %Y') }} {{ announcement.end_time.strftime('%I:%M %p') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    {# Then show expired announcements #}
+                    {% for announcement in announcements|sort(attribute='end_time', reverse=true)|sort(attribute='end_date', reverse=true)|sort(attribute='is_urgent', reverse=true) %}
+                        {% set is_expired = announcement.end_date < now.date() or (announcement.end_date == now.date() and announcement.end_time < now.time()) %}
+                        {% if is_expired %}
+                        <div class="announcement-item mb-2 opacity-75">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="announcement-title mb-1">
+                                        {% if announcement.is_urgent %}
+                                        <i class="fas fa-exclamation-circle text-danger" title="Urgent Announcement"></i>
+                                        {% endif %}
+                                        {{ announcement.title }}
+                                        <span class="badge bg-secondary" title="Past Announcement">Expired</span>
+                                    </h5>
+                                    <p class="announcement-content mb-2">{{ announcement.content }}</p>
+                                    <p class="text-muted small mb-0">
+                                        <i class="fas fa-calendar"></i> 
+                                        {{ announcement.start_date.strftime('%d %b %Y') }} {{ announcement.start_time.strftime('%I:%M %p') }} - 
+                                        {{ announcement.end_date.strftime('%d %b %Y') }} {{ announcement.end_time.strftime('%I:%M %p') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="empty-indicator text-center">
-                    <i class="fas fa-bullhorn fa-2x mb-3 text-muted"></i>
-                    <p class="text-muted">No active announcements.</p>
+                <div class="empty-indicator">
+                    <i class="fas fa-bullhorn fa-2x mb-3"></i>
+                    <p>No announcements available</p>
                 </div>
                 {% endif %}
+                <div class="text-end mt-3">
+                    {% if user.role == 'superadmin' %}
+                    <a href="{{ url_for('admin.mosque_announcements', mosque_id=mosque.id) }}" class="text-success text-decoration-none">
+                    {% else %}
+                    <a href="{{ url_for('mosque.announcements') }}" class="text-success text-decoration-none">
+                    {% endif %}
+                        View All Announcements <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<div class="mt-4">
-    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Back to Dashboard
-    </a>
 </div>
 {% endblock %} 
