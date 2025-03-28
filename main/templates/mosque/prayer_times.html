@@ -5,7 +5,7 @@
 {% block breadcrumbs %}
 {% if user.role == 'superadmin' %}
 <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}" class="text-success">Admin Dashboard</a></li>
-<li class="breadcrumb-item"><a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" class="text-success">Mosque Details</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('admin.mosque_details', id=mosque.id) }}" class="text-success">Mosque Details</a></li>
 {% else %}
 <li class="breadcrumb-item"><a href="{{ url_for('mosque.dashboard') }}" class="text-success">Mosque Dashboard</a></li>
 {% endif %}
@@ -67,7 +67,7 @@
                     </div>
                     
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Add Prayer Time
                         </button>
                     </div>
@@ -77,14 +77,12 @@
         
         <div class="mt-4">
             {% if user.role == 'superadmin' %}
-            <a href="{{ url_for('mosque.mosque_details', id=mosque.id) }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Mosque Details
-            </a>
+            <a href="{{ url_for('admin.mosque_details', id=mosque.id) }}" class="btn btn-outline-secondary">
             {% else %}
             <a href="{{ url_for('mosque.dashboard') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
             {% endif %}
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
         </div>
     </div>
 

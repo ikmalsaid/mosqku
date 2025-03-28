@@ -113,11 +113,11 @@ function copyRecoveryKey() {
     const originalText = button.innerHTML;
     button.innerHTML = '<i class="fas fa-check"></i> <span class="d-none d-sm-inline">Copied!</span>';
     button.classList.remove('btn-outline-primary');
-    button.classList.add('btn-success');
+    button.classList.add('btn-primary');
     
     setTimeout(() => {
         button.innerHTML = originalText;
-        button.classList.remove('btn-success');
+        button.classList.remove('btn-primary');
         button.classList.add('btn-outline-primary');
     }, 2000);
 }

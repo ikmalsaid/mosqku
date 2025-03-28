@@ -11,14 +11,48 @@ from werkzeug.security import generate_password_hash
 mosque = Blueprint('mosque', __name__)
 
 @mosque.route('/')
+def root():
+    return redirect(url_for('mosque.home'))
+
 @mosque.route('/home')
 def home():
     mosques = Mosque.query.all()
     return render_template("home.html", user=current_user, mosques=mosques)
 
+@mosque.route('/mosque_info/<int:id>')
+def mosque_info(id):
+    mosque = Mosque.query.get_or_404(id)
+    prayer_times = PrayerTime.query.filter_by(
+        mosque_id=id,
+        date=date.today()
+    ).all()
+    
+    # Get active announcements
+    all_announcements = Announcement.query.filter_by(mosque_id=id).all()
+    active_announcements = [a for a in all_announcements if a.is_active]
+    
+    return render_template(
+        "mosque/mosque_info.html",
+        user=current_user,
+        mosque=mosque,
+        prayer_times=prayer_times,
+        active_announcements=active_announcements,
+        now=datetime.now()
+    )
+
 @mosque.route('/register_mosque', methods=['GET', 'POST'])
 @login_required
 def register_mosque():
+    # Prevent users who already have a mosque from registering another one
+    if current_user.mosque_id:
+        flash('You are already an administrator of a mosque.', category='error')
+        return redirect(url_for('mosque.dashboard'))
+        
+    # Prevent superadmins from registering mosques (they should use add_mosque)
+    if current_user.role == 'superadmin':
+        flash('Superadmins should use the admin dashboard to add mosques.', category='error')
+        return redirect(url_for('admin.dashboard'))
+    
     if request.method == 'POST':
         name = request.form.get('name')
         address = request.form.get('address')
@@ -88,31 +122,6 @@ def dashboard():
             now=datetime.now()
         )
     return render_template("mosque/dashboard.html", user=current_user)
-
-@mosque.route('/admin/mosque_details/<int:id>')
-def mosque_details(id):
-    mosque = Mosque.query.get_or_404(id)
-    all_announcements = Announcement.query.filter_by(mosque_id=id).all()
-    active_announcements = [a for a in all_announcements if a.is_active]
-    prayer_times = PrayerTime.query.filter_by(
-        mosque_id=id,
-        date=date.today()
-    ).all()
-    
-    # Get assigned admins if user is superadmin or an admin of this mosque
-    assigned_admins = []
-    if current_user.is_authenticated and (current_user.role == 'superadmin' or current_user.mosque_id == mosque.id):
-        assigned_admins = User.query.filter_by(mosque_id=id, role='admin').all()
-    
-    return render_template(
-        'mosque/details.html',
-        user=current_user,
-        mosque=mosque,
-        announcements=active_announcements,
-        prayer_times=prayer_times,
-        assigned_admins=assigned_admins,
-        now=datetime.now()
-    )
 
 @mosque.route('/prayer_times/<int:mosque_id>', methods=['GET', 'POST'])
 @login_required
@@ -239,7 +248,7 @@ def import_prayer_times(mosque_id):
             'message': 'Failed to import prayer times. Please try again.'
         }), 500
 
-@mosque.route('/announcements', methods=['GET', 'POST'])
+@mosque.route('/mosque_announcements', methods=['GET', 'POST'])
 @login_required
 def announcements():
     # If user is not a superadmin and has no mosque, redirect to register
@@ -294,7 +303,7 @@ def announcements():
                          mosque=mosque,
                          now=datetime.now())
 
-@mosque.route('/announcements/delete/<int:id>', methods=['POST'])
+@mosque.route('/mosque_announcements/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_announcement(id):
     announcement = Announcement.query.get_or_404(id)
@@ -314,7 +323,7 @@ def delete_announcement(id):
     
     return redirect(url_for('mosque.announcements', mosque_id=mosque_id))
 
-@mosque.route('/announcements/edit/<int:id>', methods=['GET', 'POST'])
+@mosque.route('/mosque_announcements/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_announcement(id):
     announcement = Announcement.query.get_or_404(id)
@@ -360,9 +369,9 @@ def edit_announcement(id):
                          mosque=Mosque.query.get(announcement.mosque_id),
                          now=datetime.now())
 
-@mosque.route('/add_admin', methods=['GET', 'POST'])
+@mosque.route('/add_another_admin', methods=['GET', 'POST'])
 @login_required
-def add_admin():
+def add_another_admin():
     # Only allow mosque admins to access this route
     if current_user.role != 'admin':
         flash('Unauthorized access.', category='error')
@@ -391,9 +400,9 @@ def add_admin():
                 )
                 db.session.add(new_admin)
                 db.session.commit()
-                flash(f'Admin added successfully! Recovery key is: {recovery_key} - Please save this in a secure place.', category='success')
+                flash(f'{name} added successfully!', category='success')
                 return redirect(url_for('mosque.dashboard'))
             except Exception as e:
                 flash('Error adding admin.', category='error')
                 
-    return render_template("mosque/add_admin.html", user=current_user, mosque=mosque) 
+    return render_template("mosque/add_another_admin.html", user=current_user, mosque=mosque) 

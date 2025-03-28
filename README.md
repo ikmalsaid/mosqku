@@ -64,7 +64,7 @@ python app.py
 ```
 
 4. Access the application:
-- Open `http://localhost:5000`
+- Open `http://localhost:7860`
 - Login with default superadmin account:
   ```
   Email: admin@mosqku.com

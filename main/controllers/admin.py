@@ -99,7 +99,7 @@ def add_admin():
                 )
                 db.session.add(new_admin)
                 db.session.commit()
-                flash(f'Admin added successfully! Recovery key is: {recovery_key} - Please save this in a secure place.', category='success')
+                flash(f'{name} added successfully!', category='success')
                 return redirect(url_for('admin.dashboard'))
             except Exception as e:
                 flash('Error adding admin.', category='error')
@@ -107,7 +107,7 @@ def add_admin():
     mosques = Mosque.query.all()
     return render_template("admin/add_admin.html", user=current_user, mosques=mosques)
 
-@admin.route('/mosque/edit/<int:id>', methods=['GET', 'POST'])
+@admin.route('/edit_mosque/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_mosque(id):
     if current_user.role != 'superadmin':
@@ -136,7 +136,7 @@ def edit_mosque(id):
             
     return render_template("admin/edit_mosque.html", user=current_user, mosque=mosque)
 
-@admin.route('/mosque/announcements/<int:mosque_id>', methods=['GET', 'POST'])
+@admin.route('/mosque_announcements/<int:mosque_id>', methods=['GET', 'POST'])
 @login_required
 def mosque_announcements(mosque_id):
     if current_user.role != 'superadmin':
@@ -180,7 +180,7 @@ def mosque_announcements(mosque_id):
                          mosque=mosque, 
                          now=datetime.now())
 
-@admin.route('/mosque/announcements/delete/<int:id>', methods=['POST'])
+@admin.route('/mosque_announcements/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_mosque_announcement(id):
     if current_user.role != 'superadmin':
@@ -299,4 +299,32 @@ def delete_mosque(mosque_id):
     except Exception as e:
         flash('Error deleting mosque.', category='error')
         
-    return redirect(url_for('admin.dashboard')) 
+    return redirect(url_for('admin.dashboard'))
+
+@admin.route('/mosque_details/<int:id>')
+@login_required
+def mosque_details(id):
+    if current_user.role != 'superadmin':
+        flash('Unauthorized access.', category='error')
+        return redirect(url_for('mosque.dashboard'))
+
+    mosque = Mosque.query.get_or_404(id)
+    all_announcements = Announcement.query.filter_by(mosque_id=id).all()
+    active_announcements = [a for a in all_announcements if a.is_active]
+    prayer_times = PrayerTime.query.filter_by(
+        mosque_id=id,
+        date=datetime.now().date()
+    ).all()
+    
+    # Get assigned admins
+    assigned_admins = User.query.filter_by(mosque_id=id, role='admin').all()
+    
+    return render_template(
+        'admin/mosque_details.html',
+        user=current_user,
+        mosque=mosque,
+        announcements=active_announcements,
+        prayer_times=prayer_times,
+        assigned_admins=assigned_admins,
+        now=datetime.now()
+    ) 
