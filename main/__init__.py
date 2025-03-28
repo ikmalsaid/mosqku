@@ -1,18 +1,37 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
-from os import path
+from colorpaws import ColorPaws
+import os
 
-# Initialize SQLAlchemy
+logger = ColorPaws(__name__)
 db = SQLAlchemy()
-DB_NAME = "mosque.db"
 
-def create_app(demo=False, err_handler=False):
+def get_db_name(demo_mode=False):
+    """Return the appropriate database name based on demo mode"""
+    return "mosqku_demo.db" if demo_mode else "mosqku_client.db"
+
+def start_server(demo_mode=False, custom_error_handler=True,
+                 launch=True, host='0.0.0.0', port=7860):
+    """
+    Starts the Mosqku web service.
+
+    Parameters:
+    - demo_mode: Starts in demo mode with pre-defined database.
+    - custom_error_handler: Handles web errors with custom responses.
+    - launch: Launch the web server automatically.
+    - host: Specify host address.
+    - port: Specify port number.
+    """
+    logger.info(f"Starting Mosqku ({'Demo' if demo_mode else 'Client'} Mode)...")
+    logger.info(f'In loving memory of my beloved cat and kitten, Niddy and Nimi!')
+
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'your-secret-key-here'  # Change this in production
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['SECRET_KEY'] = os.getenv('MOSQKU_SECRET_KEY', 'mosqku-key-2025')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{get_db_name(demo_mode)}'
+    app.config['DEMO_MODE'] = demo_mode
 
-    if err_handler:
+    if custom_error_handler:
         app.config['DEBUG'] = False
         app.config['PROPAGATE_EXCEPTIONS'] = False
         app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
@@ -47,7 +66,7 @@ def create_app(demo=False, err_handler=False):
     def load_user(id):
         return User.query.get(int(id))
 
-    if err_handler:
+    if custom_error_handler:
         @app.errorhandler(404)
         def page_not_found(e):
             return render_template('errors/error.html',
@@ -96,12 +115,16 @@ def create_app(demo=False, err_handler=False):
                                 hide_breadcrumbs=True), 500
 
     # Create database and optionally add demo data
-    create_database(app, demo)
+    create_database(app, demo_mode)
     
-    return app
+    if launch:
+        app.run(host=host, port=port)
+    else:
+        return app
 
-def create_database(app, demo=False):
-    if not path.exists('instance/' + DB_NAME):
+def create_database(app, demo_mode=False):
+    db_name = get_db_name(demo_mode)
+    if not os.path.exists('instance/' + db_name):
         with app.app_context():
             db.create_all()
             
@@ -121,12 +144,12 @@ def create_database(app, demo=False):
                 )
                 db.session.add(default_admin)
                 db.session.commit()
-                print(f'Created superadmin account: {default_admin.email}')
-                print(f'Default superadmin recovery key: {recovery_key}')
+                logger.info(f'Created superadmin account: {default_admin.email}')
+                logger.info(f'Default superadmin recovery key: {recovery_key}')
             
             # Generate demo data if requested
-            if demo:
+            if demo_mode:
                 from .models.demo import generate_demo_data
-                generate_demo_data()
+                generate_demo_data(logger=logger)
             
-            print(f'Created database: {path.join(app.instance_path, DB_NAME)}')
+            logger.info(f'Created database: {os.path.join(app.instance_path, db_name)}')

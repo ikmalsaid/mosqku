@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, time
-import random
 from werkzeug.security import generate_password_hash
 from .user import User
 from .mosque import Mosque
@@ -8,8 +7,9 @@ from .inventory import Inventory
 from .finance import Finance
 from .announcement import Announcement
 from .. import db
+import random
 
-def generate_mosque_data(mosque_info):
+def generate_mosque_data(mosque_info, logger):
     """Generate data for a specific mosque"""
     mosque = Mosque(
         name=mosque_info['name'],
@@ -24,7 +24,7 @@ def generate_mosque_data(mosque_info):
     )
     db.session.add(mosque)
     db.session.commit()
-    print(f"Created mosque: {mosque.name}")
+    logger.info(f"Created mosque: {mosque.name}")
 
     # Create mosque admins and staff
     for user_data in mosque_info['users']:
@@ -38,7 +38,7 @@ def generate_mosque_data(mosque_info):
         )
         db.session.add(user)
     db.session.commit()
-    print(f"Created users for {mosque.name}")
+    logger.info(f"Created users for {mosque.name}")
 
     # Generate prayer times with mosque-specific variations
     prayer_names = ['Imsak', 'Subuh', 'Syuruk', 'Zuhur', 'Asar', 'Maghrib', 'Isyak']
@@ -71,7 +71,7 @@ def generate_mosque_data(mosque_info):
             )
             db.session.add(prayer_time)
     db.session.commit()
-    print(f"Generated prayer times for {mosque.name}")
+    logger.info(f"Generated prayer times for {mosque.name}")
 
     # Generate inventory with mosque-specific quantities
     inventory_items = [
@@ -97,7 +97,7 @@ def generate_mosque_data(mosque_info):
         )
         db.session.add(inventory)
     db.session.commit()
-    print(f"Generated inventory for {mosque.name}")
+    logger.info(f"Generated inventory for {mosque.name}")
 
     # Generate finance records with mosque-specific amounts
     finance_scale = random.uniform(0.8, 1.5)  # Each mosque has different financial scale
@@ -125,7 +125,7 @@ def generate_mosque_data(mosque_info):
         )
         db.session.add(finance)
     db.session.commit()
-    print(f"Generated finance records for {mosque.name}")
+    logger.info(f"Generated finance records for {mosque.name}")
 
     # Generate mosque-specific announcements
     announcements = [
@@ -166,17 +166,17 @@ def generate_mosque_data(mosque_info):
         )
         db.session.add(announcement)
     db.session.commit()
-    print(f"Generated announcements for {mosque.name}")
+    logger.info(f"Generated announcements for {mosque.name}")
 
-def generate_demo_data():
+def generate_demo_data(logger):
     """Generate demo data for multiple mosques"""
-    print("Generating demo data for multiple mosques...")
+    logger.info("Generating demo data for multiple mosques...")
     
     # Define multiple mosques with their specific data
     mosques_info = [
         {
-            'name': "Masjid Al-Salam",
-            'address': "123 Peace Street",
+            'name': "Masjid As-Salam",
+            'address': "Jalan Cempaka",
             'city': "Shah Alam",
             'state': "Selangor",
             'country': "Malaysia",
@@ -199,7 +199,7 @@ def generate_demo_data():
         },
         {
             'name': "Masjid An-Nur",
-            'address': "456 Light Avenue",
+            'address': "Jalan Makmur",
             'city': "Petaling Jaya",
             'state': "Selangor",
             'country': "Malaysia",
@@ -222,7 +222,7 @@ def generate_demo_data():
         },
         {
             'name': "Masjid Al-Hidayah",
-            'address': "789 Guidance Road",
+            'address': "Jalan Semarak",
             'city': "Subang Jaya",
             'state': "Selangor",
             'country': "Malaysia",
@@ -247,6 +247,6 @@ def generate_demo_data():
     
     # Generate data for each mosque
     for mosque_info in mosques_info:
-        generate_mosque_data(mosque_info)
+        generate_mosque_data(mosque_info, logger)
     
-    print("Demo data generation completed successfully!") 
+    logger.info("Demo data generation completed successfully!") 
