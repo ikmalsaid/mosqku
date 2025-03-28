@@ -104,6 +104,10 @@ The `app.py` script uses `start_server()` which accepts several parameters to cu
   - The port number for the web server
   - Can be changed if 7860 is already in use
 
+- `debug` (default: False)
+  - Enables Flask server debug mode.
+  - Useful for debugging purposes.
+
 Example with custom configuration:
 
 ```python
@@ -111,9 +115,10 @@ from main import start_server
 start_server(
     demo_mode=True,
     host='0.0.0.0',
-    port=7860,
+    port=5678,
     launch=True,
-    custom_error_handler=True
+    custom_error_handler=True,
+    debug=False
 )
 ```
 

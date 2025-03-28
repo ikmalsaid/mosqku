@@ -11,8 +11,8 @@ def get_db_name(demo_mode=False):
     """Return the appropriate database name based on demo mode"""
     return "mosqku_demo.db" if demo_mode else "mosqku_client.db"
 
-def start_server(demo_mode=False, custom_error_handler=True,
-                 launch=True, host='0.0.0.0', port=7860):
+def start_server(demo_mode=False, custom_error_handler=True, launch=True,
+                 host='0.0.0.0', port=7860, debug=False):
     """
     Starts the Mosqku web service.
 
@@ -22,6 +22,7 @@ def start_server(demo_mode=False, custom_error_handler=True,
     - launch: Launch the web server automatically.
     - host: Specify host address.
     - port: Specify port number.
+    - debug: Enable Flask debug mode.
     """
     logger.info(f"Starting Mosqku ({'Demo' if demo_mode else 'Client'} Mode)...")
     logger.info(f'In loving memory of my beloved cat and kitten, Niddy and Nimi!')
@@ -118,7 +119,7 @@ def start_server(demo_mode=False, custom_error_handler=True,
     create_database(app, demo_mode)
     
     if launch:
-        app.run(host=host, port=port)
+        app.run(host=host, port=port, debug=debug)
     else:
         return app
 
