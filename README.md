@@ -158,6 +158,29 @@ mosqku/
 └── app.py               # Launcher file
 ```
 
+## 🛠️ Technical Stack
+
+### Backend
+- **Framework**: Flask (Python)
+- **Database**: SQLite with SQLAlchemy ORM
+- **Authentication**: Flask-Login
+- **Form Handling**: Flask-WTF with CSRF protection
+
+### Frontend
+- **Framework**: Server-side rendered templates with Jinja2
+- **UI Framework**: Bootstrap 5.1.3
+- **Icons**: Font Awesome 6.0.0
+- **JavaScript**: Vanilla JS with Bootstrap's bundle
+- **Custom Styling**: CSS with custom font
+
+### Features
+- Server-side rendering for better SEO and initial load performance
+- Responsive design for all device sizes
+- Interactive UI components with Bootstrap
+- Custom animations and transitions
+- AJAX for dynamic data loading
+- Form validation on both client and server side
+
 ## 🔒 Security Features
 
 - Scrypt password hashing
