@@ -80,6 +80,43 @@ python app.py
 - For security reasons, please change the default superadmin password after your first login
 - The SQLite database will be recreated on each deployment, consider using a persistent database service for production
 
+### 🛠️ Server Configuration
+The `app.py` script uses `start_server()` which accepts several parameters to customize the server:
+
+- `demo_mode` (default: False)
+  - When True, starts the application with a pre-defined demo database
+  - Useful for testing and demonstration purposes
+  
+- `custom_error_handler` (default: True)
+  - Enables custom error pages and responses
+  - Recommended to keep enabled for better user experience
+  
+- `launch` (default: True)
+  - Automatically launches the web server
+  - Set to False if you want to start the server manually
+  
+- `host` (default: '0.0.0.0')
+  - The host address to bind the server to
+  - Use '127.0.0.1' for local-only access
+  - Use '0.0.0.0' to allow external access
+  
+- `port` (default: 7860)
+  - The port number for the web server
+  - Can be changed if 7860 is already in use
+
+Example with custom configuration:
+
+```python
+from main import start_server
+start_server(
+    demo_mode=True,
+    host='0.0.0.0',
+    port=7860,
+    launch=True,
+    custom_error_handler=True
+)
+```
+
 ## 👥 User Roles & Capabilities
 
 ### Superadmin
@@ -97,12 +134,10 @@ python app.py
 - View and manage mosque-specific administrators
 - Import/Export mosque-specific data
 
-### User
+### Visitors
 - View mosque information
 - Access prayer times
 - Read announcements
-- View mosque inventory status
-- Access public financial reports
 
 ## 🏗️ Project Structure
 ```
@@ -115,7 +150,7 @@ mosqku/
 │   └── __init__.py      # Main server file
 ├── instance/            # Database instance
 ├── requirements.txt     # Dependencies
-└── app.py               # Application file
+└── app.py               # Launcher file
 ```
 
 ## 🔒 Security Features
