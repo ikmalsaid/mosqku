@@ -31,10 +31,14 @@ A modern web application for managing multiple mosques (#GodamSahur 2025)
   - Track mosque assets and equipment
   - Manage maintenance schedules
   - Record item conditions and locations
+  - Import/Export inventory data (CSV)
+  - Bulk data management support
 - 💰 **Financial Management**
   - Track donations and expenses
   - Generate financial reports
   - Manage mosque budgets
+  - Import/Export financial data (CSV)
+  - Bulk transaction management
 
 ## 🚀 Quick Start
 
@@ -83,6 +87,7 @@ python app.py
 - Create and edit mosque administrators
 - Full system configuration access
 - Assign administrators to any mosque
+- Import/Export data across all mosques
 
 ### Admin
 - Manage assigned mosque details
@@ -90,6 +95,7 @@ python app.py
 - Add co-administrators to their mosque
 - Manage mosque inventory and finance
 - View and manage mosque-specific administrators
+- Import/Export mosque-specific data
 
 ### User
 - View mosque information
@@ -120,6 +126,8 @@ mosqku/
 - Secure session management
 - Recovery key system for password reset
 - Secure password requirements enforcement
+- Secure file upload validation
+- Data import validation and sanitization
 
 ## 📄 License
 

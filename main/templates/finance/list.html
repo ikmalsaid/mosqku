@@ -27,9 +27,28 @@
             </p>
         </div>
         <div class="col-md-4 text-end mt-3 mt-md-0">
-            <a href="{{ url_for('finance.add_item', mosque_id=mosque.id) }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add New Transaction
-            </a>
+            <div class="btn-group">
+                <a href="{{ url_for('finance.add_item', mosque_id=mosque.id) }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Transaction
+                </a>
+                <div class="btn-group ms-2">
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i> More
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('finance.export_data', mosque_id=mosque.id) }}">
+                                <i class="fas fa-file-export"></i> Export Data (CSV)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#importModal">
+                                <i class="fas fa-file-import"></i> Import Data (CSV)
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -122,5 +141,41 @@
     {% endif %}
         <i class="fas fa-arrow-left"></i> Back
     </a>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Import Financial Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('finance.import_data', mosque_id=mosque.id) }}" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Please upload a CSV file with the following columns:
+                        <small>
+                            <ul class="mb-0 mt-2">
+                                <li>transaction_name</li>
+                                <li>finance_category</li>
+                                <li>description</li>
+                                <li>amount</li>
+                                <li>remarks (optional)</li>
+                            </ul>
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="csvFile" class="form-label">Select CSV File</label>
+                        <input type="file" class="form-control" id="csvFile" name="file" accept=".csv" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Import Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %} 
