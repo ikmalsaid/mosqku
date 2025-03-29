@@ -56,7 +56,7 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
-            flash(f'Account created! Your recovery key is: {recovery_key} - Please save this in a secure place.', category='success')
+            flash(f'{name} account created!', category='success')
             return redirect(url_for('mosque.dashboard'))
             
     return render_template("auth/register.html", user=current_user)
