@@ -78,8 +78,7 @@ python app.py
 - Or create a new account
 
 ### ⚠️ Important Notes
-- For security reasons, please change the default superadmin password after your first login
-- The SQLite database will be recreated on each deployment, consider using a persistent database service for production
+- For security reasons, please change the default superadmin password after your first login!
 
 ### 🛠️ Server Configuration
 The `app.py` script uses `start_server()` which accepts several parameters to customize the server:
