@@ -21,7 +21,8 @@ A modern web application for managing multiple mosques (#GodamSahur 2025)
 - 👥 **Role-based Access Control**
   - Superadmin: Full system access and mosque management
   - Admin: Mosque-specific management and ability to add co-administrators
-  - User: View mosque information
+  - Staff: Limited mosque management capabilities
+  - Visitors: View mosque information
 - 🔐 **Account Security**
   - Recovery key system for password reset
   - Secure password requirements
@@ -139,6 +140,11 @@ start_server(
 - View and manage mosque-specific administrators
 - Import/Export mosque-specific data
 
+### Staff
+- Manage assigned mosque details
+- Control prayer times
+- Manage announcements
+
 ### Visitors
 - View mosque information
 - Access prayer times
@@ -148,7 +154,7 @@ start_server(
 ```
 mosqku/
 ├── main/
-│   ├── static/          # Assets (CSS, JS)
+│   ├── static/          # Assets (CSS, JS, Favicon)
 │   ├── models/          # Database models
 │   ├── controllers/     # Route handlers
 │   ├── templates/       # HTML templates
@@ -168,8 +174,8 @@ mosqku/
 
 ### Frontend
 - **Framework**: Server-side rendered templates with Jinja2
-- **UI Framework**: Bootstrap 5.1.3
-- **Icons**: Font Awesome 6.0.0
+- **UI Framework**: Bootstrap
+- **Icons**: Font Awesome
 - **JavaScript**: Vanilla JS with Bootstrap's bundle
 - **Custom Styling**: CSS with custom font
 
