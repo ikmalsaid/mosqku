@@ -28,12 +28,13 @@
                     <i class="fas fa-map-marker-alt"></i> {{ mosque.city }}, {{ mosque.state }}, {{ mosque.country }}
                 </p>
             </div>
-            {% if user.role in ['admin', 'superadmin'] %}
+            {% if user.role in ['admin', 'staff'] %}
             <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle w-md-auto" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-cog"></i> Quick Actions
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown">
+                    {% if user.role == 'admin' %}
                     <li>
                         <a class="dropdown-item" href="{{ url_for('mosque.prayer_times', mosque_id=mosque.id) }}">
                             <i class="fas fa-clock"></i> Manage Prayer Times
@@ -54,10 +55,26 @@
                             <i class="fas fa-money-bill-wave"></i> Manage Finance
                         </a>
                     </li>
-                    {% if user.role == 'admin' %}
+                    <li><hr class="dropdown-divider"></li>
                     <li>
                         <a class="dropdown-item" href="{{ url_for('mosque.add_another_admin') }}">
-                            <i class="fas fa-user-plus"></i> Add Another Admin
+                            <i class="fas fa-user-shield"></i> Add Another Admin
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ url_for('mosque.add_another_staff') }}">
+                            <i class="fas fa-user-tie"></i> Add Another Staff
+                        </a>
+                    </li>
+                    {% elif user.role == 'staff' %}
+                    <li>
+                        <a class="dropdown-item" href="{{ url_for('mosque.prayer_times', mosque_id=mosque.id) }}">
+                            <i class="fas fa-clock"></i> Manage Prayer Times
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ url_for('mosque.announcements') }}">
+                            <i class="fas fa-bullhorn"></i> Manage Announcements
                         </a>
                     </li>
                     {% endif %}
@@ -122,7 +139,7 @@
                                     {% for admin in assigned_admins|sort(attribute='id', reverse=true) %}
                                         {% if admin.id == user.id %}
                                     <div class="assigned-admin-item mb-2">
-                                        <span class="admin-name">{{ admin.name }} <small class="text-success">(You)</small></span>
+                                        <span class="admin-name small">{{ admin.name }} <span class="text-success">(You)</span></span>
                                         <br>
                                         <small class="text-muted">{{ admin.email }}</small>
                                     </div>
@@ -131,7 +148,7 @@
                                     {% for admin in assigned_admins|sort(attribute='id', reverse=true) %}
                                         {% if admin.id != user.id %}
                                     <div class="assigned-admin-item mb-2">
-                                        <span class="admin-name">{{ admin.name }}</span>
+                                        <span class="admin-name small">{{ admin.name }}</span>
                                         <br>
                                         <small class="text-muted">{{ admin.email }}</small>
                                     </div>
@@ -139,9 +156,31 @@
                                     {% endfor %}
                                 </div>
                                 {% else %}
-                                <div class="text-muted small mt-2">
-                                    <i class="fas fa-info-circle"></i> No administrators assigned
+                                <span class="text-muted">No other administrators assigned</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <i class="fas fa-user-tie"></i>
+                            <div>
+                                <label>Staff Members ({{ staff_members|length }})</label>
+                                {% if staff_members %}
+                                <div class="assigned-admins-list mt-2">
+                                    {% for staff in staff_members|sort(attribute='id', reverse=true) %}
+                                    <div class="assigned-admin-item mb-2">
+                                        <span class="admin-name small">{{ staff.name }}
+                                        {% if staff.id == user.id %}
+                                        <span class="text-success">(You)</span>
+                                        {% endif %}
+                                        </span>
+                                        <br>
+                                        <small class="text-muted">{{ staff.email }}</small>
+                                    </div>
+                                    {% endfor %}
                                 </div>
+                                {% else %}
+                                <span class="text-muted">No staff members assigned</span>
                                 {% endif %}
                             </div>
                         </div>
@@ -170,13 +209,6 @@
                                     <div class="prayer-time">{{ prayer.time.strftime('%I:%M %p') }}</div>
                                 </div>
                             {% endfor %}
-                            {% if prayer_times|length > 5 %}
-                            <div class="text-end mt-3">
-                                <a href="{{ url_for('mosque.prayer_times', mosque_id=mosque.id) }}" class="text-success text-decoration-none">
-                                    View Prayer Times Schedule <i class="fas fa-chevron-right"></i>
-                                </a>
-                            </div>
-                            {% endif %}
                         </div>
                     {% else %}
                         <div class="empty-indicator">
@@ -184,6 +216,11 @@
                             <p>No prayer times scheduled for today</p>
                         </div>
                     {% endif %}
+                    <div class="text-end mt-3">
+                        <a href="{{ url_for('mosque.prayer_times', mosque_id=mosque.id) }}" class="text-success text-decoration-none">
+                            View Prayer Times Schedule <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

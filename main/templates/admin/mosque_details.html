@@ -111,18 +111,36 @@
                             <label>Assigned Admins ({{ assigned_admins|length }})</label>
                             {% if assigned_admins %}
                             <div class="assigned-admins-list mt-2">
-                                {% for admin in assigned_admins %}
+                                {% for admin in assigned_admins|sort(attribute='id', reverse=true) %}
                                 <div class="assigned-admin-item mb-2">
-                                    <span class="admin-name">{{ admin.name }}</span>
+                                    <span class="admin-name small">{{ admin.name }}</span>
                                     <br>
                                     <small class="text-muted">{{ admin.email }}</small>
                                 </div>
                                 {% endfor %}
                             </div>
                             {% else %}
-                            <div class="text-muted small mt-2">
-                                <i class="fas fa-info-circle"></i> No administrators assigned
+                            <span class="text-muted">No administrators assigned</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="info-item mt-3">
+                        <i class="fas fa-user-tie"></i>
+                        <div>
+                            <label>Staff Members ({{ staff_members|length }})</label>
+                            {% if staff_members %}
+                            <div class="assigned-admins-list mt-2">
+                                {% for staff in staff_members|sort(attribute='id', reverse=true) %}
+                                <div class="assigned-admin-item mb-2">
+                                    <span class="admin-name">{{ staff.name }}</span>
+                                    <br>
+                                    <small class="text-muted">{{ staff.email }}</small>
+                                </div>
+                                {% endfor %}
                             </div>
+                            {% else %}
+                            <span class="text-muted">No staff members assigned</span>
                             {% endif %}
                         </div>
                     </div>
@@ -157,13 +175,6 @@
                                 <div class="prayer-time">{{ prayer.time.strftime('%I:%M %p') }}</div>
                             </div>
                         {% endfor %}
-                        {% if prayer_times|length > 5 %}
-                        <div class="text-end mt-3">
-                            <a href="{{ url_for('mosque.prayer_times', mosque_id=mosque.id) }}" class="text-success text-decoration-none">
-                                View Prayer Times Schedule <i class="fas fa-chevron-right"></i>
-                            </a>
-                        </div>
-                        {% endif %}
                     </div>
                 {% else %}
                     <div class="empty-indicator">
@@ -171,6 +182,11 @@
                         <p>No prayer times scheduled for today</p>
                     </div>
                 {% endif %}
+                <div class="text-end mt-3">
+                    <a href="{{ url_for('mosque.prayer_times', mosque_id=mosque.id) }}" class="text-success text-decoration-none">
+                        View Prayer Times Schedule <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

@@ -187,8 +187,8 @@ def generate_demo_data(logger):
             'code': 'MAS',
             'users': [
                 {"email": "admin.salam@demo.com", "name": "Salam Admin", "role": "admin"},
-                {"email": "staff1.salam@demo.com", "name": "Salam Staff 1", "role": "admin"},
-                {"email": "staff2.salam@demo.com", "name": "Salam Staff 2", "role": "admin"}
+                {"email": "staff1.salam@demo.com", "name": "Salam Staff 1", "role": "staff"},
+                {"email": "staff2.salam@demo.com", "name": "Salam Staff 2", "role": "staff"}
             ],
             'special_announcement': {
                 'title': 'Quran Competition Registration Open',
@@ -210,8 +210,8 @@ def generate_demo_data(logger):
             'code': 'MAN',
             'users': [
                 {"email": "admin.nur@demo.com", "name": "Nur Admin", "role": "admin"},
-                {"email": "staff1.nur@demo.com", "name": "Nur Staff 1", "role": "admin"},
-                {"email": "staff2.nur@demo.com", "name": "Nur Staff 2", "role": "admin"}
+                {"email": "staff1.nur@demo.com", "name": "Nur Staff 1", "role": "staff"},
+                {"email": "staff2.nur@demo.com", "name": "Nur Staff 2", "role": "staff"}
             ],
             'special_announcement': {
                 'title': 'Youth Islamic Camp',
@@ -233,8 +233,8 @@ def generate_demo_data(logger):
             'code': 'MAH',
             'users': [
                 {"email": "admin.hidayah@demo.com", "name": "Hidayah Admin", "role": "admin"},
-                {"email": "staff1.hidayah@demo.com", "name": "Hidayah Staff 1", "role": "admin"},
-                {"email": "staff2.hidayah@demo.com", "name": "Hidayah Staff 2", "role": "admin"}
+                {"email": "staff1.hidayah@demo.com", "name": "Hidayah Staff 1", "role": "staff"},
+                {"email": "staff2.hidayah@demo.com", "name": "Hidayah Staff 2", "role": "staff"}
             ],
             'special_announcement': {
                 'title': 'Community Iftar Program',

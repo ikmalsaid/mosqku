@@ -9,7 +9,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
     name = db.Column(db.String(150), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default='user')  # 'user', 'admin', 'superadmin'
+    role = db.Column(db.String(20), nullable=False, default='user')  # 'user', 'admin', 'staff', 'superadmin'
     recovery_key = db.Column(db.String(16), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     

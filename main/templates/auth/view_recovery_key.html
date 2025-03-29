@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Recovery Key{% endblock %}
+{% block title %}View Recovery Key{% endblock %}
 
 {% block breadcrumbs %}
 {% if user.role == 'superadmin' %}
 <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}" class="text-success">Admin Dashboard</a></li>
-{% elif user.role == 'admin' %}
+{% elif user.role in ['admin', 'staff'] %}
 <li class="breadcrumb-item"><a href="{{ url_for('mosque.dashboard') }}" class="text-success">Mosque Dashboard</a></li>
 {% endif %}
 <li class="breadcrumb-item active">View Recovery Key</li>
@@ -90,7 +90,7 @@
                         <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left"></i> Back to Dashboard
                         </a>
-                        {% else %}
+                        {% elif user.role in ['admin', 'staff'] %}
                         <a href="{{ url_for('mosque.dashboard') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left"></i> Back to Dashboard
                         </a>

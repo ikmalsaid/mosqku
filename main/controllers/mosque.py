@@ -112,6 +112,9 @@ def dashboard():
         # Get assigned admins for this mosque
         assigned_admins = User.query.filter_by(mosque_id=current_user.mosque_id, role='admin').all()
         
+        # Get staff members for this mosque
+        staff_members = User.query.filter_by(mosque_id=current_user.mosque_id, role='staff').all()
+        
         return render_template(
             "mosque/dashboard.html",
             user=current_user,
@@ -119,6 +122,7 @@ def dashboard():
             prayer_times=prayer_times,
             active_announcements=active_announcements,
             assigned_admins=assigned_admins,
+            staff_members=staff_members,
             now=datetime.now()
         )
     return render_template("mosque/dashboard.html", user=current_user)
@@ -405,4 +409,42 @@ def add_another_admin():
             except Exception as e:
                 flash('Error adding admin.', category='error')
                 
-    return render_template("mosque/add_another_admin.html", user=current_user, mosque=mosque) 
+    return render_template("mosque/add_another_admin.html", user=current_user, mosque=mosque)
+
+@mosque.route('/add_another_staff', methods=['GET', 'POST'])
+@login_required
+def add_another_staff():
+    # Only allow mosque admins to access this route
+    if current_user.role != 'admin':
+        flash('Unauthorized access.', category='error')
+        return redirect(url_for('mosque.dashboard'))
+        
+    mosque = Mosque.query.get_or_404(current_user.mosque_id)
+    
+    if request.method == 'POST':
+        email = request.form.get('email')
+        name = request.form.get('name')
+        password = request.form.get('password')
+        
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash('Email already exists.', category='error')
+        else:
+            try:
+                recovery_key = User.generate_recovery_key()
+                new_staff = User(
+                    email=email,
+                    name=name,
+                    password=generate_password_hash(password, method='scrypt'),
+                    role='staff',
+                    mosque_id=current_user.mosque_id,
+                    recovery_key=recovery_key
+                )
+                db.session.add(new_staff)
+                db.session.commit()
+                flash(f'{name} added successfully!', category='success')
+                return redirect(url_for('mosque.dashboard'))
+            except Exception as e:
+                flash('Error adding staff.', category='error')
+                
+    return render_template("mosque/add_another_staff.html", user=current_user, mosque=mosque) 

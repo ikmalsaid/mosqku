@@ -6,7 +6,7 @@ from ..models.announcement import Announcement
 from ..models.prayer_time import PrayerTime
 from .. import db
 from werkzeug.security import generate_password_hash
-from datetime import datetime
+from datetime import datetime, date
 
 admin = Blueprint('admin', __name__)
 
@@ -18,16 +18,16 @@ def dashboard():
         return redirect(url_for('mosque.dashboard'))
     
     mosques = Mosque.query.all()
-    admins = User.query.filter_by(role='admin').all()
+    users = User.query.filter(User.role.in_(['admin', 'staff'])).order_by(User.mosque_id.asc(), User.role.asc(), User.name.asc()).all()
         
-    # Get mosque names for all admins in one query to avoid N+1 problem
+    # Get mosque names for all users in one query to avoid N+1 problem
     mosque_dict = {m.id: m.name for m in Mosque.query.all()}
         
     return render_template(
         "admin/dashboard.html",
         user=current_user,
         mosques=mosques,
-        admins=admins,
+        users=users,
         mosque_dict=mosque_dict
     )
 
@@ -317,14 +317,54 @@ def mosque_details(id):
     ).all()
     
     # Get assigned admins
+
     assigned_admins = User.query.filter_by(mosque_id=id, role='admin').all()
+    staff_members = User.query.filter_by(mosque_id=id, role='staff').all()
     
     return render_template(
-        'admin/mosque_details.html',
+        "admin/mosque_details.html",
         user=current_user,
         mosque=mosque,
-        announcements=active_announcements,
-        prayer_times=prayer_times,
         assigned_admins=assigned_admins,
+        staff_members=staff_members,
+        prayer_times=prayer_times,
+        announcements=active_announcements,
         now=datetime.now()
-    ) 
+    )
+
+@admin.route('/add_staff', methods=['GET', 'POST'])
+@login_required
+def add_staff():
+    if current_user.role != 'superadmin':
+        flash('Unauthorized access.', category='error')
+        return redirect(url_for('mosque.dashboard'))
+        
+    if request.method == 'POST':
+        email = request.form.get('email')
+        name = request.form.get('name')
+        password = request.form.get('password')
+        mosque_id = request.form.get('mosque_id')
+        
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash('Email already exists.', category='error')
+        else:
+            try:
+                recovery_key = User.generate_recovery_key()
+                new_staff = User(
+                    email=email,
+                    name=name,
+                    password=generate_password_hash(password, method='scrypt'),
+                    role='staff',
+                    mosque_id=mosque_id,
+                    recovery_key=recovery_key
+                )
+                db.session.add(new_staff)
+                db.session.commit()
+                flash(f'{name} added successfully!', category='success')
+                return redirect(url_for('admin.dashboard'))
+            except Exception as e:
+                flash('Error adding staff.', category='error')
+                
+    mosques = Mosque.query.all()
+    return render_template("admin/add_staff.html", user=current_user, mosques=mosques) 

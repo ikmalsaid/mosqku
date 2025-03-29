@@ -1,4 +1,4 @@
-/* Custom styles for Mosque Management System */
+/* Custom styles for Mosqku */
 
 :root {
     --primary-color: #006400;
@@ -318,7 +318,7 @@ body {
 /* Features Section */
 .features-section {
     padding: 5rem 0;
-    background-color: #f8f9fa;
+    border-radius: 10px;
 }
 
 .section-title {
@@ -400,8 +400,7 @@ body {
 }
 
 .mosque-name {
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1rem;
     color: var(--primary-dark);
     margin-bottom: 1rem;
 }
@@ -729,11 +728,9 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.mosque-name,
 .admin-name {
     color: var(--primary-color);
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1rem;
 }
 
 .mosque-actions {
@@ -759,9 +756,10 @@ body {
 
 .card-body {
     flex: 1 1 auto;
-    padding: 0.5rem 0.5rem;
+    padding: 1rem;
 }
 
 .badge {
     font-weight: normal !important;
+    font-size: 0.8rem !important;
 }
