@@ -24,7 +24,6 @@ def generate_mosque_data(mosque_info, logger):
     )
     db.session.add(mosque)
     db.session.commit()
-    logger.info(f"Created mosque: {mosque.name}")
 
     # Create mosque admins and staff
     for user_data in mosque_info['users']:
@@ -38,7 +37,6 @@ def generate_mosque_data(mosque_info, logger):
         )
         db.session.add(user)
     db.session.commit()
-    logger.info(f"Created users for {mosque.name}")
 
     # Generate prayer times with mosque-specific variations
     prayer_names = ['Imsak', 'Subuh', 'Syuruk', 'Zuhur', 'Asar', 'Maghrib', 'Isyak']
@@ -71,7 +69,6 @@ def generate_mosque_data(mosque_info, logger):
             )
             db.session.add(prayer_time)
     db.session.commit()
-    logger.info(f"Generated prayer times for {mosque.name}")
 
     # Generate inventory with mosque-specific quantities
     inventory_items = [
@@ -97,7 +94,6 @@ def generate_mosque_data(mosque_info, logger):
         )
         db.session.add(inventory)
     db.session.commit()
-    logger.info(f"Generated inventory for {mosque.name}")
 
     # Generate finance records with mosque-specific amounts
     finance_scale = random.uniform(0.8, 1.5)  # Each mosque has different financial scale
@@ -125,7 +121,6 @@ def generate_mosque_data(mosque_info, logger):
         )
         db.session.add(finance)
     db.session.commit()
-    logger.info(f"Generated finance records for {mosque.name}")
 
     # Generate mosque-specific announcements
     announcements = [
@@ -166,11 +161,10 @@ def generate_mosque_data(mosque_info, logger):
         )
         db.session.add(announcement)
     db.session.commit()
-    logger.info(f"Generated announcements for {mosque.name}")
 
 def generate_demo_data(logger):
     """Generate demo data for multiple mosques"""
-    logger.info("Generating demo data for multiple mosques...")
+    logger.info("Generating demo data...")
     
     # Define multiple mosques with their specific data
     mosques_info = [
@@ -249,4 +243,4 @@ def generate_demo_data(logger):
     for mosque_info in mosques_info:
         generate_mosque_data(mosque_info, logger)
     
-    logger.info("Demo data generation completed successfully!") 
+    logger.info("Demo data generated successfully!") 
